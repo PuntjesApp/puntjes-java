@@ -27,11 +27,7 @@ import okhttp3.Interceptor;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-/**
- * Turns a response that is not a success into the exception of its family, and a network failure into a
- * {@link TransportException}. A success body is read here, so a body that breaks off is a transport failure too.
- */
-public final class ErrorInterceptor implements Interceptor {
+final class ErrorInterceptor implements Interceptor {
     private static final String REQUEST_ID_HEADER = "X-Request-ID";
 
     @Override

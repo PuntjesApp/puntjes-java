@@ -16,6 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HexFormat;
 import java.util.Map;
 import java.util.Optional;
@@ -73,7 +74,10 @@ final class TokenSource {
     void reject(AccessToken rejected) throws IOException {
         lock();
         try {
-            store.remove(key, rejected);
+            Optional<AccessToken> stored = store.get(key);
+            if (stored.isPresent() && stored.get().value().equals(rejected.value())) {
+                store.remove(key, stored.get());
+            }
         } finally {
             grantLock.unlock();
         }
@@ -154,7 +158,7 @@ final class TokenSource {
         JsonElement expiresIn = root.get("expires_in");
         long lifetime = expiresIn != null && expiresIn.isJsonPrimitive() && expiresIn.getAsJsonPrimitive().isNumber()
                 ? expiresIn.getAsLong() : DEFAULT_LIFETIME_SECONDS;
-        return new AccessToken(value, issuedAt.plusSeconds(lifetime));
+        return new AccessToken(value, issuedAt.plusSeconds(lifetime).truncatedTo(ChronoUnit.SECONDS));
     }
 
     private static String keyFor(HttpUrl baseUrl, String clientId, String clientSecret) {

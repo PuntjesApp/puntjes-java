@@ -11,12 +11,14 @@ import app.puntjes.sdk.auth.TokenStore;
 import app.puntjes.sdk.exceptions.AuthenticationException;
 import app.puntjes.sdk.exceptions.ServerException;
 import app.puntjes.sdk.generated.PuntjesClient;
+import app.puntjes.sdk.generated.models.CreateTransactionData;
 import app.puntjes.sdk.support.ApiServer;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
@@ -82,6 +84,54 @@ class AuthenticationTest {
         List<RecordedRequest> sent = server.takeRequests();
         assertEquals(2, grantsIn(sent).size());
         assertEquals(List.of("Bearer token-1", "Bearer token-2"), authorizations(apiRequestsIn(sent)));
+    }
+
+    @Test
+    void aRejectedTokenIsReplacedInAStoreThatRoundsTheExpiry() {
+        server.enqueueError(401, "UNAUTHENTICATED");
+        server.enqueueJson(200, ME);
+        InMemoryTokenStore inner = new InMemoryTokenStore();
+        TokenStore rounding = new TokenStore() {
+            @Override
+            public Optional<AccessToken> get(String key) {
+                return inner.get(key);
+            }
+
+            @Override
+            public void put(String key, AccessToken token) {
+                inner.put(key, new AccessToken(token.value(), token.expiresAt().truncatedTo(ChronoUnit.MINUTES)));
+            }
+
+            @Override
+            public void remove(String key, AccessToken rejected) {
+                inner.remove(key, rejected);
+            }
+        };
+
+        client("client-id", "client-secret", options().tokenStore(rounding).build()).me().get();
+
+        List<RecordedRequest> sent = server.takeRequests();
+        assertEquals(2, grantsIn(sent).size());
+        assertEquals(List.of("Bearer token-1", "Bearer token-2"), authorizations(apiRequestsIn(sent)));
+    }
+
+    @Test
+    void aKeylessPostIsSentOnceMoreWithTheSameBodyAfterA401() {
+        server.enqueueError(401, "UNAUTHENTICATED");
+        server.enqueueJson(201, "{\"data\":{}}");
+        CreateTransactionData body = new CreateTransactionData();
+        body.setIdentifier("customer-1");
+
+        client().transactions().post(body);
+
+        List<RecordedRequest> sent = server.takeRequests();
+        List<RecordedRequest> posts = apiRequestsIn(sent);
+        assertEquals(2, grantsIn(sent).size());
+        assertEquals(List.of("POST", "POST"), posts.stream().map(RecordedRequest::getMethod).toList());
+        String first = posts.get(0).getBody().readUtf8();
+        assertTrue(first.contains("customer-1"));
+        assertEquals(first, posts.get(1).getBody().readUtf8());
+        assertEquals(List.of("Bearer token-1", "Bearer token-2"), authorizations(posts));
     }
 
     @Test
@@ -229,7 +279,9 @@ class AuthenticationTest {
         List<RecordedRequest> sent = server.takeRequests();
         assertEquals(1, grantsIn(sent).size());
         assertEquals(List.of("Bearer token-1"), authorizations(apiRequestsIn(sent)));
-        assertEquals("token-1", store.get("any").orElseThrow().value());
+        AccessToken granted = store.get("any").orElseThrow();
+        assertEquals("token-1", granted.value());
+        assertEquals(granted.expiresAt().truncatedTo(ChronoUnit.SECONDS), granted.expiresAt());
     }
 
     @Test

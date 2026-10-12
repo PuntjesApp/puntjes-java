@@ -11,16 +11,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * Adds the bearer token from the client credentials grant, and sends a call once more with a new token after a 401.
- * An operation the API serves without a token gets none.
- */
-public final class AuthInterceptor implements Interceptor {
+final class AuthInterceptor implements Interceptor {
     private final TokenSource tokens;
     private final String apiPath;
 
-    /** Grants tokens for the credentials through {@code grants}, a client that retries like a GET. */
-    public AuthInterceptor(String clientId, String clientSecret, PuntjesOptions options, OkHttpClient grants) {
+    AuthInterceptor(String clientId, String clientSecret, PuntjesOptions options, OkHttpClient grants) {
         HttpUrl baseUrl = HttpUrl.get(options.baseUrl());
         this.tokens = new TokenSource(clientId, clientSecret, baseUrl,
                 options.tokenStore().orElseGet(InMemoryTokenStore::new), grants);

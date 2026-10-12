@@ -20,6 +20,6 @@ public final class InMemoryTokenStore implements TokenStore {
 
     @Override
     public void remove(String key, AccessToken rejected) {
-        tokens.remove(key, rejected);
+        tokens.computeIfPresent(key, (k, stored) -> stored.value().equals(rejected.value()) ? null : stored);
     }
 }

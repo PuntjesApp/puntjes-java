@@ -1,9 +1,11 @@
-package app.puntjes.sdk;
+package app.puntjes.sdk.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
+import app.puntjes.sdk.PuntjesClientFactory;
+import app.puntjes.sdk.PuntjesOptions;
 import app.puntjes.sdk.exceptions.PlanLimitExceededException;
 import app.puntjes.sdk.exceptions.ServerException;
 import app.puntjes.sdk.exceptions.TransportException;
@@ -11,7 +13,6 @@ import app.puntjes.sdk.generated.PuntjesClient;
 import app.puntjes.sdk.generated.models.CreateTransactionData;
 import app.puntjes.sdk.generated.models.UpsertProductData;
 import app.puntjes.sdk.support.ApiServer;
-import app.puntjes.sdk.http.RetryInterceptor;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;

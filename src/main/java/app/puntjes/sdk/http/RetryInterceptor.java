@@ -21,12 +21,7 @@ import okhttp3.ResponseBody;
 import okio.Buffer;
 import okio.BufferedSink;
 
-/**
- * Sends a call again after a network failure, a 5xx or a {@code RATE_LIMITED} answer, but only when sending it twice is
- * safe: a read, a write that replaces, a token grant, or a POST that carries an {@code idempotency_key}. The response
- * body is read here, so a successful body that breaks off is a network failure too.
- */
-public final class RetryInterceptor implements Interceptor {
+final class RetryInterceptor implements Interceptor {
     private static final Set<String> REPEATABLE_METHODS = Set.of("GET", "HEAD", "PUT", "PATCH", "DELETE");
     private static final String IDEMPOTENCY_KEY = "idempotency_key";
 
@@ -34,8 +29,7 @@ public final class RetryInterceptor implements Interceptor {
     private final Duration baseDelay;
     private final PuntjesOptions.Sleeper sleeper;
 
-    /** Retries as the options say. */
-    public RetryInterceptor(PuntjesOptions options) {
+    RetryInterceptor(PuntjesOptions options) {
         this.maxRetries = options.maxRetries();
         this.baseDelay = options.retryBaseDelay();
         this.sleeper = options.sleeper();

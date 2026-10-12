@@ -32,6 +32,7 @@ import okhttp3.mockwebserver.SocketPolicy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -229,6 +230,7 @@ class ErrorMappingTest {
     }
 
     @Test
+    @Timeout(10)
     void aClosedSocketIsATransportException() {
         server.respondWith(request -> new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST));
 
@@ -236,7 +238,9 @@ class ErrorMappingTest {
 
         assertInstanceOf(IOException.class, error.getCause());
         assertTrue(error.status().isEmpty());
-        assertEquals(List.of("/api/v1/campaigns"), apiPaths().stream().distinct().toList());
+        List<String> paths = apiPaths();
+        assertEquals(List.of("/api/v1/campaigns"), paths.stream().distinct().toList());
+        assertTrue(paths.size() <= 2 * ATTEMPTS, "attempts: " + paths.size());
     }
 
     @Test

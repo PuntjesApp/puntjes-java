@@ -10,6 +10,6 @@ public interface TokenStore {
     /** Stores the token under the key. */
     void put(String key, AccessToken token);
 
-    /** Removes the token under the key, but only while it is still the rejected one. */
+    /** Removes the token under the key, but only while its value is still the value of the rejected one. */
     void remove(String key, AccessToken rejected);
 }

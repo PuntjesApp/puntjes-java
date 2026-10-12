@@ -1,9 +1,7 @@
 package app.puntjes.sdk;
 
 import app.puntjes.sdk.generated.PuntjesClient;
-import app.puntjes.sdk.http.AuthInterceptor;
-import app.puntjes.sdk.http.ErrorInterceptor;
-import app.puntjes.sdk.http.RetryInterceptor;
+import app.puntjes.sdk.http.HttpClients;
 import com.microsoft.kiota.authentication.AnonymousAuthenticationProvider;
 import com.microsoft.kiota.http.OkHttpRequestAdapter;
 import okhttp3.OkHttpClient;
@@ -22,19 +20,7 @@ public final class PuntjesClientFactory {
     public static PuntjesClient create(String clientId, String clientSecret, PuntjesOptions options) {
         requireText(clientId, "clientId");
         requireText(clientSecret, "clientSecret");
-        OkHttpClient base = options.httpClient().map(OkHttpClient::newBuilder).orElseGet(OkHttpClient.Builder::new)
-                .connectTimeout(options.timeout())
-                .readTimeout(options.timeout())
-                .writeTimeout(options.timeout())
-                .build();
-        OkHttpClient grants = base.newBuilder()
-                .addInterceptor(new RetryInterceptor(options))
-                .build();
-        OkHttpClient http = base.newBuilder()
-                .addInterceptor(new ErrorInterceptor())
-                .addInterceptor(new RetryInterceptor(options))
-                .addInterceptor(new AuthInterceptor(clientId, clientSecret, options, grants))
-                .build();
+        OkHttpClient http = HttpClients.build(clientId, clientSecret, options);
         var adapter = new OkHttpRequestAdapter(new AnonymousAuthenticationProvider(), null, null, http);
         adapter.setBaseUrl(options.baseUrl());
         return new PuntjesClient(adapter);
