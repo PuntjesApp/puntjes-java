@@ -37,19 +37,9 @@ final class ErrorInterceptor implements Interceptor {
             if (!response.isSuccessful()) {
                 throw toException(response);
             }
-            return buffered(response);
+            return response;
         } catch (IOException e) {
             throw new TransportException("The Puntjes API could not be reached: " + e.getMessage(), e);
-        }
-    }
-
-    private static Response buffered(Response response) throws IOException {
-        ResponseBody body = response.body();
-        if (body == null) {
-            return response;
-        }
-        try (body) {
-            return response.newBuilder().body(ResponseBody.create(body.bytes(), body.contentType())).build();
         }
     }
 
