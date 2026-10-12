@@ -23,7 +23,7 @@ public final class PuntjesClientFactory {
         OkHttpClient http = HttpClients.build(clientId, clientSecret, options);
         var adapter = new OkHttpRequestAdapter(new AnonymousAuthenticationProvider(), null, null, http);
         adapter.setBaseUrl(options.baseUrl());
-        return new PuntjesClient(adapter);
+        return new FactoryClient(adapter);
     }
 
     private static void requireText(String value, String name) {
