@@ -13,11 +13,13 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
+import okio.BufferedSink;
 
 /**
  * Sends a call again after a network failure, a 5xx or a {@code RATE_LIMITED} answer, but only when sending it twice is
@@ -45,13 +47,17 @@ public final class RetryInterceptor implements Interceptor {
         if (request.method().equals("POST")) {
             request = withBodyRead(request);
         }
-        int retries = isSafeToRepeat(request) ? maxRetries : 0;
+        boolean safe = isSafeToRepeat(request);
+        if (!safe && request.body() != null) {
+            request = request.newBuilder().method(request.method(), oneShot(request.body())).build();
+        }
+        int retries = safe ? maxRetries : 0;
         for (int attempt = 0; ; attempt++) {
             Response response;
             try {
                 response = buffered(chain.proceed(request));
             } catch (IOException networkFailure) {
-                if (attempt >= retries) {
+                if (attempt >= retries || chain.call().isCanceled()) {
                     throw networkFailure;
                 }
                 waitFor(baseDelay.multipliedBy(1L << attempt));
@@ -74,6 +80,30 @@ public final class RetryInterceptor implements Interceptor {
         Buffer bytes = new Buffer();
         body.writeTo(bytes);
         return request.newBuilder().method("POST", RequestBody.create(bytes.readByteArray(), body.contentType())).build();
+    }
+
+    private static RequestBody oneShot(RequestBody body) {
+        return new RequestBody() {
+            @Override
+            public MediaType contentType() {
+                return body.contentType();
+            }
+
+            @Override
+            public long contentLength() throws IOException {
+                return body.contentLength();
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                body.writeTo(sink);
+            }
+
+            @Override
+            public boolean isOneShot() {
+                return true;
+            }
+        };
     }
 
     private static boolean isSafeToRepeat(Request request) throws IOException {

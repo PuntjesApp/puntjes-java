@@ -1,6 +1,7 @@
 package app.puntjes.sdk;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import app.puntjes.sdk.exceptions.PlanLimitExceededException;
@@ -10,10 +11,14 @@ import app.puntjes.sdk.generated.PuntjesClient;
 import app.puntjes.sdk.generated.models.CreateTransactionData;
 import app.puntjes.sdk.generated.models.UpsertProductData;
 import app.puntjes.sdk.support.ApiServer;
+import app.puntjes.sdk.http.RetryInterceptor;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.mockwebserver.SocketPolicy;
@@ -93,6 +98,38 @@ class RetryTest {
 
         assertThrowsExactly(TransportException.class, () -> client(2).transactions().post(new CreateTransactionData()));
 
+        assertEquals(1, apiRequests().size());
+    }
+
+    @Test
+    void aPostWithoutAnIdempotencyKeyIsNotResentOnAPooledConnectionThatDies() {
+        server.enqueueJson(200, CAMPAIGNS);
+        server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST));
+        server.enqueueJson(201, "{\"data\":{}}");
+        PuntjesClient client = client(2);
+
+        client.campaigns().get();
+        assertThrowsExactly(TransportException.class, () -> client.transactions().post(new CreateTransactionData()));
+
+        assertEquals(List.of("GET", "POST"), apiRequests().stream().map(RecordedRequest::getMethod).toList());
+    }
+
+    @Test
+    void aCancelledCallIsNotRetried() {
+        server.enqueueError(503, "INTERNAL_ERROR");
+        server.enqueueError(503, "INTERNAL_ERROR");
+        server.enqueueJson(200, CAMPAIGNS);
+        Call[] call = new Call[1];
+        PuntjesOptions options = PuntjesOptions.builder().maxRetries(2).sleeper(wait -> {
+            waits.add(wait);
+            call[0].cancel();
+        }).build();
+        OkHttpClient http = new OkHttpClient.Builder().addInterceptor(new RetryInterceptor(options)).build();
+        call[0] = http.newCall(new Request.Builder().url(server.baseUrl() + "/campaigns").build());
+
+        assertThrows(IOException.class, call[0]::execute);
+
+        assertEquals(1, waits.size());
         assertEquals(1, apiRequests().size());
     }
 

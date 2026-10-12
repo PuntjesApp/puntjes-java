@@ -23,7 +23,6 @@ public final class PuntjesClientFactory {
         requireText(clientId, "clientId");
         requireText(clientSecret, "clientSecret");
         OkHttpClient http = options.httpClient().map(OkHttpClient::newBuilder).orElseGet(OkHttpClient.Builder::new)
-                .retryOnConnectionFailure(false)
                 .addInterceptor(new ErrorInterceptor())
                 .addInterceptor(new RetryInterceptor(options))
                 .addInterceptor(new AuthInterceptor())

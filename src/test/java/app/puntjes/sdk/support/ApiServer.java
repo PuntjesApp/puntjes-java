@@ -37,7 +37,7 @@ public final class ApiServer implements AutoCloseable {
     }
 
     public String baseUrl() {
-        return server.url("/api/v1").newBuilder().host("127.0.0.1").build().toString();
+        return server.url("/api/v1").toString();
     }
 
     public void enqueueToken() {
