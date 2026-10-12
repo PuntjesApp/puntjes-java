@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Build and test on Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [17, 21, 25]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Verify
+        run: ./mvnw -B verify
+
+  # The codegen and dispatch-plan tools.
+  tools:
+    name: Tools tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Verify the tools
+        run: ./mvnw -B -f tools/pom.xml verify
+
+  # A hand edit under generated, or a generator bump with no regeneration, turns this red.
+  generated:
+    name: Generated code matches the spec
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Regenerate from spec/api.json
+        run: sh scripts/generate.sh
+
+      - name: Fail on any difference
+        run: |
+          git add --intent-to-add --all src/main/java/app/puntjes/sdk/generated
+          git diff --exit-code -- src/main/java/app/puntjes/sdk/generated
+
+  # JitPack runs this install with its own version. A pom that still holds ${revision} as its version breaks every customer build.
+  jitpack:
+    name: Install as JitPack does
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Install
+        run: ./mvnw -B install -DskipTests -Drevision=0.0.0-ci
+
+      - name: The installed pom holds no placeholder
+        run: |
+          pom=~/.m2/repository/app/puntjes/puntjes-java/0.0.0-ci/puntjes-java-0.0.0-ci.pom
+          test -f "$pom"
+          if grep -Fq -- "\${revision}" "$pom"; then
+            echo "::error::The installed pom still holds the revision placeholder."
+            exit 1
+          fi
+          grep -Fq -- "<version>0.0.0-ci</version>" "$pom"
+
+  workflows:
+    name: Workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: actionlint
+        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color
+
+      - name: zizmor
+        run: docker run --rm -v "$PWD:/repo" -w /repo ghcr.io/zizmorcore/zizmor@sha256:a2eb396d886c053073405c7a980f2139ba2248ec172243cfa3841e57196e8101 --offline .github/workflows
+
+  # The one check the main ruleset requires, so a change to the jobs above never edits the ruleset.
+  ci:
+    name: CI
+    needs: [test, tools, generated, jitpack, workflows]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every job passed
+        env:
+          TEST: ${{ needs.test.result }}
+          TOOLS: ${{ needs.tools.result }}
+          GENERATED: ${{ needs.generated.result }}
+          JITPACK: ${{ needs.jitpack.result }}
+          WORKFLOWS: ${{ needs.workflows.result }}
+        run: |
+          test "$TEST" = success && test "$TOOLS" = success && test "$GENERATED" = success \
+            && test "$JITPACK" = success && test "$WORKFLOWS" = success

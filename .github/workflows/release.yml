@@ -1,0 +1,79 @@
+name: Release
+
+# release-please keeps a release PR open from the conventional commits on main. That PR merges itself when CI is
+# green; the merge tags the version, and the warm-up job makes JitPack build that tag.
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release PR and tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      released: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app
+        with:
+          client-id: ${{ vars.SDK_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.SDK_BOT_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: release
+        with:
+          token: ${{ steps.app.outputs.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      - name: Let the release PR merge itself when CI is green
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          PR_JSON: ${{ steps.release.outputs.pr }}
+        run: |
+          number=$(printf '%s' "$PR_JSON" | jq -r '.number // empty' 2>/dev/null || true)
+          if [ -z "$number" ]; then
+            echo "release-please opened or updated no release PR in this run."
+            exit 0
+          fi
+          gh pr merge "$number" --repo "$GITHUB_REPOSITORY" --auto --squash
+
+  # Its own job, so "Re-run failed jobs" warms the build again: release-please reports a release only once.
+  warm-up:
+    name: Make JitPack build the tag
+    needs: release-please
+    if: needs.release-please.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions: {}
+    steps:
+      - name: Wait for the pom on JitPack
+        env:
+          TAG: ${{ needs.release-please.outputs.tag }}
+        run: |
+          base="https://jitpack.io/com/github/PuntjesApp/puntjes-java/${TAG}"
+          end=$((SECONDS + 900))
+          attempt=0
+          while [ "$SECONDS" -lt "$end" ]; do
+            attempt=$((attempt + 1))
+            status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "${base}/puntjes-java-${TAG}.pom" || true)
+            echo "Attempt ${attempt}: HTTP ${status}"
+            if [ "$status" = 200 ]; then
+              exit 0
+            fi
+            if [ "$((SECONDS + 60))" -lt "$end" ]; then
+              sleep 60
+            else
+              break
+            fi
+          done
+          echo "::error::JitPack did not build ${TAG} in 15 minutes. Build log: ${base}/build.log"
+          exit 1

@@ -1,0 +1,41 @@
+{
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": { "security": [], "responses": { "200": { "description": "ok" } } }
+    },
+    "/customers/{id}": {
+      "get": {
+        "responses": {
+          "404": {
+            "description": "not found",
+            "x-error-codes": [{ "code": "CUSTOMER_NOT_FOUND", "status": 404 }]
+          }
+        }
+      },
+      "post": {
+        "security": [],
+        "responses": {
+          "404": {
+            "description": "not found",
+            "x-error-codes": [{ "code": "CUSTOMER_NOT_FOUND", "status": 404 }]
+          }
+        }
+      }
+    },
+    "/secured": {
+      "get": { "security": [{ "oauth": [] }], "responses": { "200": { "description": "ok" } } }
+    }
+  },
+  "components": {
+    "responses": {
+      "Limited": {
+        "description": "limited",
+        "x-error-codes": [
+          { "code": "RATE_LIMITED", "status": 429 },
+          { "code": "PLAN_LIMIT_EXCEEDED", "status": 429 }
+        ]
+      }
+    }
+  }
+}
