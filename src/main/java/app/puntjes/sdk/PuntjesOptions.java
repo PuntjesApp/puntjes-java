@@ -2,6 +2,7 @@ package app.puntjes.sdk;
 
 import app.puntjes.sdk.auth.TokenStore;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import okhttp3.OkHttpClient;
@@ -10,6 +11,8 @@ import okhttp3.OkHttpClient;
 public final class PuntjesOptions {
     /** The production API. */
     public static final String DEFAULT_BASE_URL = "https://puntjes.app/api/v1";
+
+    private static final String API_PREFIX = "/api/v1";
 
     /** The most retries a call can have; the waits double, so a higher count would wait for hours. */
     public static final int MAX_RETRIES_LIMIT = 10;
@@ -44,7 +47,7 @@ public final class PuntjesOptions {
         return new Builder();
     }
 
-    /** The API base URL, without a trailing slash. */
+    /** The API base URL: the host followed by {@code /api/v1}, without a trailing slash. */
     public String baseUrl() {
         return baseUrl;
     }
@@ -92,9 +95,12 @@ public final class PuntjesOptions {
         private Builder() {
         }
 
-        /** The API base URL; a trailing slash is removed. */
+        /** The host of the API, with or without {@code /api/v1} and a trailing slash. */
         public Builder baseUrl(String baseUrl) {
-            this.baseUrl = Objects.requireNonNull(baseUrl, "baseUrl").replaceAll("/+$", "");
+            String trimmed = Objects.requireNonNull(baseUrl, "baseUrl").replaceAll("/+$", "");
+            String host = trimmed.toLowerCase(Locale.ROOT).endsWith(API_PREFIX)
+                    ? trimmed.substring(0, trimmed.length() - API_PREFIX.length()) : trimmed;
+            this.baseUrl = host + API_PREFIX;
             return this;
         }
 

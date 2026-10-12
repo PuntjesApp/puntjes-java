@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class PuntjesOptionsTest {
     @Test
@@ -20,9 +22,11 @@ class PuntjesOptionsTest {
         assertTrue(options.httpClient().isEmpty());
     }
 
-    @Test
-    void aTrailingSlashIsRemovedFromTheBaseUrl() {
-        PuntjesOptions options = PuntjesOptions.builder().baseUrl("https://shop.test/api/v1/").build();
+    @ParameterizedTest
+    @ValueSource(strings = {"https://shop.test", "https://shop.test/", "https://shop.test/api/v1",
+            "https://shop.test/api/v1/", "https://shop.test/API/V1"})
+    void theBaseUrlIsTakenWithOrWithoutTheApiPrefix(String baseUrl) {
+        PuntjesOptions options = PuntjesOptions.builder().baseUrl(baseUrl).build();
 
         assertEquals("https://shop.test/api/v1", options.baseUrl());
     }
