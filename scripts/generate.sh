@@ -14,5 +14,6 @@ docker run --rm -u "$(id -u):$(id -g)" -v "$root:/w" "$kiota" generate \
   --deserializer com.microsoft.kiota.serialization.TextParseNodeFactory \
   --exclude-backward-compatible --clean-output --log-level Warning
 mkdir -p "$HOME/.m2"
-docker run --rm -u "$(id -u):$(id -g)" -e MAVEN_CONFIG=/tmp/m2 -v "$HOME/.m2:/tmp/m2" -v "$root:/w" -w /w "$maven" \
-  mvn -B -q -Duser.home=/tmp -f tools/pom.xml compile exec:java -Dexec.args="codegen spec/api.json $out"
+docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -e MAVEN_CONFIG=/tmp/m2 -v "$HOME/.m2:/tmp/.m2" -v "$root:/w" -w /w "$maven" \
+  ./mvnw -B -q -Dmaven.repo.local=/tmp/.m2/repository -f tools/pom.xml compile exec:java \
+  -Dexec.args="codegen spec/api.json $out"

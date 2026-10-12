@@ -60,13 +60,20 @@ jobs:
           TAG: ${{ needs.release-please.outputs.tag }}
         run: |
           base="https://jitpack.io/com/github/PuntjesApp/puntjes-java/${TAG}"
-          for attempt in $(seq 1 15); do
-            status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 120 "${base}/puntjes-java-${TAG}.pom" || true)
+          end=$((SECONDS + 900))
+          attempt=0
+          while [ "$SECONDS" -lt "$end" ]; do
+            attempt=$((attempt + 1))
+            status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "${base}/puntjes-java-${TAG}.pom" || true)
             echo "Attempt ${attempt}: HTTP ${status}"
             if [ "$status" = 200 ]; then
               exit 0
             fi
-            sleep 60
+            if [ "$((SECONDS + 60))" -lt "$end" ]; then
+              sleep 60
+            else
+              break
+            fi
           done
           echo "::error::JitPack did not build ${TAG} in 15 minutes. Build log: ${base}/build.log"
           exit 1
