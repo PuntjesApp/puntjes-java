@@ -4,27 +4,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
+import app.puntjes.sdk.auth.AccessToken;
+import app.puntjes.sdk.auth.TokenStore;
 import app.puntjes.sdk.exceptions.PlanLimitExceededException;
 import app.puntjes.sdk.exceptions.RateLimitException;
 import app.puntjes.sdk.exceptions.ServerException;
 import app.puntjes.sdk.exceptions.TransportException;
 import app.puntjes.sdk.generated.PuntjesClient;
 import app.puntjes.sdk.generated.models.CreateTransactionData;
+import app.puntjes.sdk.generated.models.UpdateProductData;
 import app.puntjes.sdk.generated.models.UpsertProductData;
 import app.puntjes.sdk.support.ApiServer;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.mockwebserver.SocketPolicy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 class RetryTest {
     private static final String CAMPAIGNS = "{\"data\":{\"data\":[],\"meta\":{\"current_page\":1}}}";
@@ -221,6 +230,69 @@ class RetryTest {
         client(2).products().byExternalId("p1").delete();
 
         assertEquals(List.of("DELETE", "DELETE"), apiRequests().stream().map(RecordedRequest::getMethod).toList());
+    }
+
+    @Test
+    void aPatchRetries() {
+        server.enqueueError(503, "INTERNAL_ERROR");
+        server.enqueueJson(200, "{\"data\":{}}");
+
+        client(2).products().byExternalId("p1").patch(new UpdateProductData());
+
+        assertEquals(List.of("PATCH", "PATCH"), apiRequests().stream().map(RecordedRequest::getMethod).toList());
+    }
+
+    @Test
+    void aHeadRetries() throws IOException {
+        server.enqueue(new MockResponse().setResponseCode(503));
+        server.enqueue(new MockResponse().setResponseCode(200));
+        PuntjesOptions options = PuntjesOptions.builder().maxRetries(2).sleeper(waits::add).build();
+        OkHttpClient http = new OkHttpClient.Builder().addInterceptor(new RetryInterceptor(options)).build();
+
+        try (Response response = http.newCall(new Request.Builder().url(server.baseUrl() + "/campaigns").head().build())
+                .execute()) {
+            assertEquals(200, response.code());
+        }
+
+        assertEquals(List.of("HEAD", "HEAD"), apiRequests().stream().map(RecordedRequest::getMethod).toList());
+    }
+
+    @Test
+    void eachRetryAsksForAFreshToken() {
+        Map<String, AccessToken> stored = new ConcurrentHashMap<>();
+        TokenStore store = new TokenStore() {
+            @Override
+            public Optional<AccessToken> get(String key) {
+                return Optional.ofNullable(stored.get(key));
+            }
+
+            @Override
+            public void put(String key, AccessToken token) {
+                stored.put(key, token);
+            }
+
+            @Override
+            public void remove(String key, AccessToken rejected) {
+                stored.remove(key, rejected);
+            }
+        };
+        server.enqueueError(503, "INTERNAL_ERROR");
+        server.enqueueJson(200, CAMPAIGNS);
+        PuntjesOptions options = PuntjesOptions.builder().baseUrl(server.baseUrl()).maxRetries(2).tokenStore(store)
+                .sleeper(wait -> stored.clear()).build();
+
+        PuntjesClientFactory.create("client-id", "client-secret", options).campaigns().get();
+
+        assertEquals(List.of("Bearer token-1", "Bearer token-2"),
+                apiRequests().stream().map(r -> r.getHeader("Authorization")).toList());
+    }
+
+    @Test
+    @Timeout(6)
+    void eachAttemptEndsAtTheTimeoutOfTheOptions() {
+        server.enqueue(ApiServer.json(200, CAMPAIGNS).setHeadersDelay(3, TimeUnit.SECONDS));
+
+        assertThrowsExactly(TransportException.class, () -> client(0, Duration.ofSeconds(1)).campaigns().get());
     }
 
     @Test
