@@ -2,6 +2,7 @@ package app.puntjes.sdk;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -21,6 +22,7 @@ import app.puntjes.sdk.support.ApiServer;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
@@ -33,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class ErrorMappingTest {
     private static final int ATTEMPTS = 3;
@@ -143,7 +146,62 @@ class ErrorMappingTest {
 
         NotFoundException error = assertThrowsExactly(NotFoundException.class, () -> client().campaigns().get());
 
+        assertEquals(OptionalInt.of(404), error.status());
+        assertEquals(Optional.empty(), error.errorCode());
         assertEquals(Optional.empty(), error.rawCode());
+    }
+
+    @Test
+    void anErrorThatIsTextIsTheFamilyOfItsStatus() {
+        server.enqueueJson(409, "{\"error\":\"text\"}");
+
+        ConflictException error = assertThrowsExactly(ConflictException.class, () -> client().campaigns().get());
+
+        assertEquals(Optional.empty(), error.rawCode());
+        assertEquals("The Puntjes API returned HTTP 409.", error.getMessage());
+    }
+
+    @Test
+    void aCodeThatIsNotTextIsNoCode() {
+        server.enqueueJson(403, "{\"error\":{\"code\":123,\"message\":\"No.\"}}");
+
+        ForbiddenException error = assertThrowsExactly(ForbiddenException.class, () -> client().campaigns().get());
+
+        assertEquals(Optional.empty(), error.rawCode());
+        assertEquals(Optional.empty(), error.errorCode());
+    }
+
+    @Test
+    void aValidationErrorCarriesTheMessagesOfEachField() {
+        server.enqueueJson(422, """
+                {"error":{"code":"VALIDATION_ERROR","message":"The given data was invalid.","status":422,
+                "request_id":"req-1","details":{"email":["The email is invalid.","The email is taken."],
+                "name":["The name is required."]}}}""");
+
+        ValidationException error = assertThrowsExactly(ValidationException.class, () -> client().campaigns().get());
+
+        assertEquals(Map.of("email", List.of("The email is invalid.", "The email is taken."),
+                "name", List.of("The name is required.")), error.details());
+        assertEquals(List.of("The email is invalid.", "The email is taken."), error.errorsFor("email"));
+        assertEquals(List.of(), error.errorsFor("phone"));
+        assertThrows(UnsupportedOperationException.class, () -> error.details().put("phone", List.of()));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "",
+        ",\"details\":null",
+        ",\"details\":\"bad\"",
+        ",\"details\":[\"bad\"]",
+        ",\"details\":{\"email\":\"not a list\",\"name\":[1,{\"a\":2}]}"
+    })
+    void aMissingOrMalformedDetailsBlockGivesNoFieldErrors(String details) {
+        server.enqueueJson(422, "{\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"Invalid.\"" + details + "}}");
+
+        ValidationException error = assertThrowsExactly(ValidationException.class, () -> client().campaigns().get());
+
+        assertEquals(Map.of(), error.details());
+        assertEquals(List.of(), error.errorsFor("email"));
     }
 
     @Test
@@ -174,13 +232,28 @@ class ErrorMappingTest {
     @Test
     void aClosedSocketIsATransportException() {
         for (int i = 0; i < ATTEMPTS; i++) {
-            server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START));
+            server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST));
         }
 
         TransportException error = assertThrowsExactly(TransportException.class, () -> client().campaigns().get());
 
         assertInstanceOf(IOException.class, error.getCause());
         assertTrue(error.status().isEmpty());
+        assertEquals(List.of("/api/v1/campaigns"), apiPaths().stream().distinct().toList());
+    }
+
+    @Test
+    void anErrorBodyThatBreaksOffKeepsTheStatus() {
+        for (int i = 0; i < ATTEMPTS; i++) {
+            server.enqueue(new MockResponse().setResponseCode(500).setHeader("Content-Type", "application/json")
+                    .setBody("{\"error\":{\"message\":\"" + "x".repeat(20000) + "\"}}")
+                    .setSocketPolicy(SocketPolicy.DISCONNECT_DURING_RESPONSE_BODY));
+        }
+
+        ServerException error = assertThrowsExactly(ServerException.class, () -> client().campaigns().get());
+
+        assertEquals(OptionalInt.of(500), error.status());
+        assertEquals(Optional.empty(), error.rawCode());
     }
 
     @Test
@@ -201,8 +274,12 @@ class ErrorMappingTest {
         var campaigns = client().campaigns().get();
 
         assertEquals(0, campaigns.getData().getData().size());
-        assertEquals(List.of("/api/v1/campaigns"), server.takeRequests().stream().map(RecordedRequest::getPath)
-                .filter(path -> !ApiServer.TOKEN_PATH.equals(path)).toList());
+        assertEquals(List.of("/api/v1/campaigns"), apiPaths());
+    }
+
+    private List<String> apiPaths() {
+        return server.takeRequests().stream().map(RecordedRequest::getPath)
+                .filter(path -> !ApiServer.TOKEN_PATH.equals(path)).toList();
     }
 
     private PuntjesClient client() {

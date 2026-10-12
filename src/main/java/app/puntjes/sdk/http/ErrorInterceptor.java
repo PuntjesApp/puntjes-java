@@ -18,6 +18,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -52,7 +57,7 @@ public final class ErrorInterceptor implements Interceptor {
         }
     }
 
-    private static PuntjesException toException(Response response) throws IOException {
+    private static PuntjesException toException(Response response) {
         try (response) {
             ApiError error = readError(response);
             return switch (error.status()) {
@@ -70,16 +75,49 @@ public final class ErrorInterceptor implements Interceptor {
         }
     }
 
-    private static ApiError readError(Response response) throws IOException {
-        ResponseBody body = response.body();
-        JsonObject envelope = envelope(body == null ? "" : body.string());
+    private static ApiError readError(Response response) {
+        JsonObject envelope = envelope(bodyText(response));
         String message = text(envelope, "message");
         String requestId = text(envelope, "request_id");
         return new ApiError(
                 response.code(),
                 text(envelope, "code"),
                 message != null ? message : "The Puntjes API returned HTTP " + response.code() + ".",
-                requestId != null ? requestId : response.header(REQUEST_ID_HEADER));
+                requestId != null ? requestId : response.header(REQUEST_ID_HEADER),
+                fieldErrors(envelope.get("details")));
+    }
+
+    private static String bodyText(Response response) {
+        ResponseBody body = response.body();
+        if (body == null) {
+            return "";
+        }
+        try {
+            return body.string();
+        } catch (IOException brokenBody) {
+            return "";
+        }
+    }
+
+    private static Map<String, List<String>> fieldErrors(JsonElement details) {
+        if (details == null || !details.isJsonObject()) {
+            return Map.of();
+        }
+        Map<String, List<String>> fields = new LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> field : details.getAsJsonObject().entrySet()) {
+            if (field.getValue().isJsonArray()) {
+                List<String> messages = new ArrayList<>();
+                field.getValue().getAsJsonArray().forEach(message -> {
+                    if (message.isJsonPrimitive() && message.getAsJsonPrimitive().isString()) {
+                        messages.add(message.getAsString());
+                    }
+                });
+                if (!messages.isEmpty()) {
+                    fields.put(field.getKey(), List.copyOf(messages));
+                }
+            }
+        }
+        return Collections.unmodifiableMap(fields);
     }
 
     private static JsonObject envelope(String body) {

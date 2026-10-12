@@ -9,7 +9,6 @@ import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import okhttp3.mockwebserver.SocketPolicy;
 
 /** A fake Puntjes API: token grants and API calls answer from two queues, so a grant never eats an API response. */
 public final class ApiServer implements AutoCloseable {
@@ -28,12 +27,6 @@ public final class ApiServer implements AutoCloseable {
                 Queue<MockResponse> queue = TOKEN_PATH.equals(request.getPath()) ? tokens : responses;
                 MockResponse next = queue.poll();
                 return next != null ? next : new MockResponse().setResponseCode(599).setBody("nothing enqueued");
-            }
-
-            @Override
-            public MockResponse peek() {
-                MockResponse next = responses.peek();
-                return next != null ? next : new MockResponse().setSocketPolicy(SocketPolicy.KEEP_OPEN);
             }
         });
         try {
