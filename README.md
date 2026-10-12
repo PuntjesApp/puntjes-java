@@ -77,7 +77,7 @@ cd examples/quickstart
 
 ```java
 var puntjes = PuntjesClientFactory.create(id, secret, PuntjesOptions.builder()
-        .baseUrl("https://puntjes.app/api/v1")
+        .baseUrl("https://puntjes.app")      // with or without /api/v1
         .maxRetries(2)                       // 0 turns retries off
         .retryBaseDelay(Duration.ofMillis(500))
         .timeout(Duration.ofSeconds(30))     // per attempt
@@ -110,7 +110,7 @@ Every error is an unchecked `PuntjesException`, with a subclass per kind:
 | `NotFoundException` | 404 |
 | `ConflictException` | 409 |
 | `ValidationException` | 422 `VALIDATION_ERROR`; `details()` and `errorsFor("field")` give the messages |
-| `RateLimitException` | 429 `RATE_LIMITED`; `retryAfter()` says how long to wait |
+| `RateLimitException` | Any 429 except `PLAN_LIMIT_EXCEEDED`, such as `RATE_LIMITED` or `CARD_SEND_THROTTLED`; `retryAfter()` says how long to wait. Only `RATE_LIMITED` is retried |
 | `PlanLimitExceededException` | 429 `PLAN_LIMIT_EXCEEDED`: the shop's plan is used up |
 | `ServerException` | 5xx |
 | `TransportException` | No answer from the API |

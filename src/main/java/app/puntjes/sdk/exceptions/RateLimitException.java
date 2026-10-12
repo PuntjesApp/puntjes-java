@@ -3,7 +3,7 @@ package app.puntjes.sdk.exceptions;
 import java.time.Duration;
 import java.util.Optional;
 
-/** HTTP 429 with RATE_LIMITED: wait {@link #retryAfter()} and try again. */
+/** HTTP 429 with any code but PLAN_LIMIT_EXCEEDED, CARD_SEND_THROTTLED included. Wait {@link #retryAfter()}. */
 public final class RateLimitException extends PuntjesException {
     private static final long serialVersionUID = 1L;
 

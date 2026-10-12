@@ -62,6 +62,7 @@ class ErrorMappingTest {
                 Arguments.of(422, ErrorCode.VALIDATION_ERROR, ValidationException.class),
                 Arguments.of(422, ErrorCode.INSUFFICIENT_BALANCE, PuntjesException.class),
                 Arguments.of(429, ErrorCode.RATE_LIMITED, RateLimitException.class),
+                Arguments.of(429, ErrorCode.CARD_SEND_THROTTLED, RateLimitException.class),
                 Arguments.of(429, ErrorCode.PLAN_LIMIT_EXCEEDED, PlanLimitExceededException.class),
                 Arguments.of(500, ErrorCode.INTERNAL_ERROR, ServerException.class),
                 Arguments.of(405, ErrorCode.METHOD_NOT_ALLOWED, PuntjesException.class));
