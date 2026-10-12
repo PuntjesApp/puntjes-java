@@ -45,7 +45,6 @@ class ErrorMappingTest {
     @BeforeEach
     void startServer() {
         server = new ApiServer();
-        server.enqueueToken();
     }
 
     @AfterEach
@@ -231,9 +230,7 @@ class ErrorMappingTest {
 
     @Test
     void aClosedSocketIsATransportException() {
-        for (int i = 0; i < ATTEMPTS; i++) {
-            server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST));
-        }
+        server.respondWith(request -> new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST));
 
         TransportException error = assertThrowsExactly(TransportException.class, () -> client().campaigns().get());
 

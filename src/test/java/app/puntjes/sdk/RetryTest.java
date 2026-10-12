@@ -35,7 +35,6 @@ class RetryTest {
     @BeforeEach
     void startServer() {
         server = new ApiServer();
-        server.enqueueToken();
     }
 
     @AfterEach

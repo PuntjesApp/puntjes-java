@@ -57,7 +57,7 @@ public final class ErrorInterceptor implements Interceptor {
         }
     }
 
-    private static PuntjesException toException(Response response) {
+    static PuntjesException toException(Response response) {
         try (response) {
             ApiError error = readError(response);
             return switch (error.status()) {

@@ -22,13 +22,18 @@ public final class PuntjesClientFactory {
     public static PuntjesClient create(String clientId, String clientSecret, PuntjesOptions options) {
         requireText(clientId, "clientId");
         requireText(clientSecret, "clientSecret");
-        OkHttpClient http = options.httpClient().map(OkHttpClient::newBuilder).orElseGet(OkHttpClient.Builder::new)
-                .addInterceptor(new ErrorInterceptor())
-                .addInterceptor(new RetryInterceptor(options))
-                .addInterceptor(new AuthInterceptor())
+        OkHttpClient base = options.httpClient().map(OkHttpClient::newBuilder).orElseGet(OkHttpClient.Builder::new)
                 .connectTimeout(options.timeout())
                 .readTimeout(options.timeout())
                 .writeTimeout(options.timeout())
+                .build();
+        OkHttpClient grants = base.newBuilder()
+                .addInterceptor(new RetryInterceptor(options))
+                .build();
+        OkHttpClient http = base.newBuilder()
+                .addInterceptor(new ErrorInterceptor())
+                .addInterceptor(new RetryInterceptor(options))
+                .addInterceptor(new AuthInterceptor(clientId, clientSecret, options, grants))
                 .build();
         var adapter = new OkHttpRequestAdapter(new AnonymousAuthenticationProvider(), null, null, http);
         adapter.setBaseUrl(options.baseUrl());
