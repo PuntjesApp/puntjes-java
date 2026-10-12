@@ -5,18 +5,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
-/** Command line entry of the tools: {@code codegen <spec> <outDir>}. */
+/** Command line entry: {@code codegen <spec> <outDir>} or {@code dispatch-plan <tag> <level> <url> <source> <open>}. */
 public final class Main {
 
     private Main() {}
 
     public static void main(String[] args) throws IOException {
-        if (args.length != 3 || !args[0].equals("codegen")) {
-            System.err.println("Usage: codegen <spec> <outDir>");
+        if (args.length == 3 && args[0].equals("codegen")) {
+            codegen(Path.of(args[1]), Path.of(args[2]));
+        } else if (args.length >= 1 && args[0].equals("dispatch-plan")) {
+            System.exit(DispatchPlan.run(Arrays.copyOfRange(args, 1, args.length), System.out, System.err));
+        } else {
+            System.err.println("Usage: codegen <spec> <outDir> | dispatch-plan <tag> <level> <url> <source> <open>");
             System.exit(2);
         }
-        codegen(Path.of(args[1]), Path.of(args[2]));
     }
 
     private static void codegen(Path spec, Path outDir) throws IOException {
