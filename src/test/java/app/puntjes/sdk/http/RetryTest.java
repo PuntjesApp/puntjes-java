@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import app.puntjes.sdk.PuntjesClientFactory;
 import app.puntjes.sdk.PuntjesOptions;
 import app.puntjes.sdk.exceptions.PlanLimitExceededException;
+import app.puntjes.sdk.exceptions.RateLimitException;
 import app.puntjes.sdk.exceptions.ServerException;
 import app.puntjes.sdk.exceptions.TransportException;
 import app.puntjes.sdk.generated.PuntjesClient;
@@ -99,6 +100,7 @@ class RetryTest {
         assertThrowsExactly(TransportException.class, () -> client(2).transactions().post(new CreateTransactionData()));
 
         assertEquals(1, apiRequests().size());
+        assertEquals(List.of(), waits);
     }
 
     @Test
@@ -158,6 +160,21 @@ class RetryTest {
     }
 
     @Test
+    void aRateLimitThatNeverEndsReachesTheCallerWithItsCodeAndRetryAfter() {
+        for (int i = 0; i < 3; i++) {
+            server.enqueue(new MockResponse().setResponseCode(429).setHeader("Retry-After", "2")
+                    .setBody("{\"error\":{\"code\":\"RATE_LIMITED\",\"message\":\"Slow down.\"}}"));
+        }
+
+        RateLimitException thrown = assertThrowsExactly(RateLimitException.class, () -> client(2).campaigns().get());
+
+        assertEquals("RATE_LIMITED", thrown.rawCode().orElseThrow());
+        assertEquals(Duration.ofSeconds(2), thrown.retryAfter().orElseThrow());
+        assertEquals(3, apiRequests().size());
+        assertEquals(List.of(Duration.ofSeconds(2), Duration.ofSeconds(2)), waits);
+    }
+
+    @Test
     void aRetryAfterDateInThePastWaitsNothing() {
         server.enqueue(new MockResponse().setResponseCode(429).setHeader("Retry-After", "Wed, 21 Oct 2015 07:28:00 GMT")
                 .setBody("{\"error\":{\"code\":\"RATE_LIMITED\",\"message\":\"Slow down.\"}}"));
@@ -209,13 +226,14 @@ class RetryTest {
     }
 
     @Test
-    void aGetRetriesAfterANetworkFailure() {
+    void aGetThatLosesItsConnectionIsSentAgainByOkHttpWithoutAWait() {
         server.enqueue(new MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST));
         server.enqueueJson(200, CAMPAIGNS);
 
         client(2).campaigns().get();
 
         assertEquals(2, apiRequests().size());
+        assertEquals(List.of(), waits);
     }
 
     @Test
@@ -226,6 +244,7 @@ class RetryTest {
         client(2, Duration.ofMillis(300)).campaigns().get();
 
         assertEquals(2, apiRequests().size());
+        assertEquals(List.of(Duration.ofMillis(500)), waits);
     }
 
     @Test
@@ -238,6 +257,7 @@ class RetryTest {
         client(2).campaigns().get();
 
         assertEquals(2, apiRequests().size());
+        assertEquals(List.of(Duration.ofMillis(500)), waits);
     }
 
     private List<RecordedRequest> apiRequests() {

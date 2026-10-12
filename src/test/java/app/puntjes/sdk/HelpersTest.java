@@ -6,9 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import app.puntjes.sdk.exceptions.NotFoundException;
+import app.puntjes.sdk.exceptions.ServerException;
+import app.puntjes.sdk.exceptions.TransportException;
 import app.puntjes.sdk.generated.PuntjesClient;
 import app.puntjes.sdk.support.ApiServer;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -67,6 +71,37 @@ class HelpersTest {
     }
 
     @Test
+    void thePaginatorAlsoOffersAnIterableThatFetchesLazily() {
+        server.enqueueJson(200, productPage(1, 2, "a", "b"));
+        server.enqueueJson(200, productPage(2, 2, "c"));
+        PuntjesClient client = client();
+
+        Iterable<String> names = Paginator.iterable(page -> productPage(client, page));
+        List<String> seen = new ArrayList<>();
+        for (String name : names) {
+            seen.add(name);
+            if (seen.size() == 2) {
+                assertEquals(List.of("1"), requestedPages());
+            }
+        }
+
+        assertEquals(List.of("a", "b", "c"), seen);
+        assertEquals(List.of("2"), requestedPages());
+    }
+
+    @Test
+    void theIterableStopsWhenTheServerIgnoresThePageParameter() {
+        server.enqueueJson(200, productPage(1, 3, "a"));
+        server.enqueueJson(200, productPage(1, 3, "a"));
+        PuntjesClient client = client();
+
+        List<String> seen = new ArrayList<>();
+        Paginator.iterable(page -> productPage(client, page)).forEach(seen::add);
+
+        assertEquals(List.of("a"), seen);
+    }
+
+    @Test
     void anEmptyFirstPageYieldsNothing() {
         server.enqueueJson(200, productPage(1, 1));
 
@@ -89,6 +124,20 @@ class HelpersTest {
     }
 
     @Test
+    void aWalletPassAnswerWithNoBodyIsATransportFailure() {
+        server.enqueue(new MockResponse().setResponseCode(204));
+
+        assertThrowsExactly(TransportException.class, () -> WalletPass.apple(client(), "cus_42"));
+    }
+
+    @Test
+    void aServerErrorOnTheWalletPassThrowsServerException() {
+        server.enqueueError(500, "INTERNAL_ERROR");
+
+        assertThrowsExactly(ServerException.class, () -> WalletPass.apple(client(), "cus_42"));
+    }
+
+    @Test
     void aMissingCustomerThrowsNotFound() {
         server.enqueueError(404, "CUSTOMER_NOT_FOUND");
 
@@ -97,11 +146,14 @@ class HelpersTest {
 
     private List<String> productNames() {
         PuntjesClient client = client();
-        return Paginator.all(page -> {
-            var response = client.products().get(c -> c.queryParameters.page = page);
-            var meta = response.getData().getMeta();
-            return new Paginator.Page<>(response.getData().getData(), meta.getCurrentPage(), meta.getLastPage());
-        }).map(product -> product.getName()).collect(Collectors.toList());
+        return Paginator.all(page -> productPage(client, page)).collect(Collectors.toList());
+    }
+
+    private static Paginator.Page<String> productPage(PuntjesClient client, int page) {
+        var response = client.products().get(c -> c.queryParameters.page = page);
+        var meta = response.getData().getMeta();
+        var names = response.getData().getData().stream().map(product -> product.getName()).toList();
+        return new Paginator.Page<>(names, meta.getCurrentPage(), meta.getLastPage());
     }
 
     private List<String> requestedPages() {
@@ -113,7 +165,7 @@ class HelpersTest {
     }
 
     private static String productPage(int current, int last, String... names) {
-        String items = java.util.Arrays.stream(names).map(n -> "{\"id\":1,\"name\":\"" + n + "\"}")
+        String items = Arrays.stream(names).map(n -> "{\"id\":1,\"name\":\"" + n + "\"}")
                 .collect(Collectors.joining(","));
         return "{\"data\":{\"data\":[%s],\"meta\":{\"current_page\":%d,\"last_page\":%d}}}".formatted(items, current, last);
     }

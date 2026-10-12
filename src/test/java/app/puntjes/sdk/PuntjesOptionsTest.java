@@ -33,6 +33,12 @@ class PuntjesOptionsTest {
     }
 
     @Test
+    void moreThanTenRetriesAreRefused() {
+        assertEquals(10, PuntjesOptions.builder().maxRetries(10).build().maxRetries());
+        assertThrows(IllegalArgumentException.class, () -> PuntjesOptions.builder().maxRetries(11));
+    }
+
+    @Test
     void aNegativeDurationIsRefused() {
         assertThrows(IllegalArgumentException.class, () -> PuntjesOptions.builder().timeout(Duration.ofSeconds(-1)));
         assertThrows(IllegalArgumentException.class,

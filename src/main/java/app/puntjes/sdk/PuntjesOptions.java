@@ -11,6 +11,9 @@ public final class PuntjesOptions {
     /** The production API. */
     public static final String DEFAULT_BASE_URL = "https://puntjes.app/api/v1";
 
+    /** The most retries a call can have; the waits double, so a higher count would wait for hours. */
+    public static final int MAX_RETRIES_LIMIT = 10;
+
     /** Waits between two attempts of a call. Tests replace it so that they do not wait. */
     @FunctionalInterface
     public interface Sleeper {
@@ -95,10 +98,11 @@ public final class PuntjesOptions {
             return this;
         }
 
-        /** How many times a failed call is tried again; 0 turns retries off. */
+        /** How many times a failed call is tried again, from 0 (retries off) to {@link #MAX_RETRIES_LIMIT}. */
         public Builder maxRetries(int maxRetries) {
-            if (maxRetries < 0) {
-                throw new IllegalArgumentException("maxRetries must be 0 or more, got " + maxRetries);
+            if (maxRetries < 0 || maxRetries > MAX_RETRIES_LIMIT) {
+                throw new IllegalArgumentException(
+                        "maxRetries must be 0 to " + MAX_RETRIES_LIMIT + ", got " + maxRetries);
             }
             this.maxRetries = maxRetries;
             return this;

@@ -8,9 +8,9 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.Set;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -38,10 +38,14 @@ final class RetryInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        if (request.method().equals("POST")) {
-            request = withBodyRead(request);
+        boolean safe;
+        if (request.method().equals("POST") && request.body() != null) {
+            byte[] bytes = readBody(request.body());
+            request = request.newBuilder().method("POST", RequestBody.create(bytes, request.body().contentType())).build();
+            safe = request.tag(TokenSource.class) != null || carriesIdempotencyKey(bytes);
+        } else {
+            safe = isSafeToRepeat(request);
         }
-        boolean safe = isSafeToRepeat(request);
         if (!safe && request.body() != null) {
             request = request.newBuilder().method(request.method(), oneShot(request.body())).build();
         }
@@ -66,14 +70,10 @@ final class RetryInterceptor implements Interceptor {
         }
     }
 
-    private static Request withBodyRead(Request request) throws IOException {
-        RequestBody body = request.body();
-        if (body == null) {
-            return request;
-        }
+    private static byte[] readBody(RequestBody body) throws IOException {
         Buffer bytes = new Buffer();
         body.writeTo(bytes);
-        return request.newBuilder().method("POST", RequestBody.create(bytes.readByteArray(), body.contentType())).build();
+        return bytes.readByteArray();
     }
 
     private static RequestBody oneShot(RequestBody body) {
@@ -100,20 +100,13 @@ final class RetryInterceptor implements Interceptor {
         };
     }
 
-    private static boolean isSafeToRepeat(Request request) throws IOException {
-        return REPEATABLE_METHODS.contains(request.method())
-                || request.tag(TokenSource.class) != null
-                || request.method().equals("POST") && carriesIdempotencyKey(request.body());
+    private static boolean isSafeToRepeat(Request request) {
+        return REPEATABLE_METHODS.contains(request.method()) || request.tag(TokenSource.class) != null;
     }
 
-    private static boolean carriesIdempotencyKey(RequestBody body) throws IOException {
-        if (body == null) {
-            return false;
-        }
-        Buffer bytes = new Buffer();
-        body.writeTo(bytes);
+    private static boolean carriesIdempotencyKey(byte[] body) {
         try {
-            return JsonParser.parseString(bytes.readUtf8()) instanceof JsonObject root
+            return JsonParser.parseString(new String(body, StandardCharsets.UTF_8)) instanceof JsonObject root
                     && !text(root.get(IDEMPOTENCY_KEY)).isEmpty();
         } catch (JsonParseException notJson) {
             return false;

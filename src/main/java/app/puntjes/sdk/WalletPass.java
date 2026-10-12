@@ -1,5 +1,6 @@
 package app.puntjes.sdk;
 
+import app.puntjes.sdk.exceptions.TransportException;
 import app.puntjes.sdk.generated.PuntjesClient;
 import app.puntjes.sdk.generated.customers.item.walletpass.GetPlatformQueryParameterType;
 import com.microsoft.kiota.RequestInformation;
@@ -19,20 +20,23 @@ public final class WalletPass {
      * The Apple Wallet pass of a customer.
      *
      * @param client a client made by {@link PuntjesClientFactory}
+     * @throws IllegalArgumentException when the client was not made by {@link PuntjesClientFactory}
      * @throws app.puntjes.sdk.exceptions.NotFoundException when the customer does not exist
+     * @throws app.puntjes.sdk.exceptions.TransportException when the answer has no body
      */
     public static byte[] apple(PuntjesClient client, String customerId) {
         if (!(client instanceof FactoryClient factoryClient)) {
             throw new IllegalArgumentException("The client must come from PuntjesClientFactory");
         }
         RequestInformation request = client.customers().byCustomer(customerId).walletPass()
-                .toGetRequestInformation(c -> c.queryParameters.platform = GetPlatformQueryParameterType.Apple);
-        request.headers.remove("Accept");
-        request.headers.add("Accept", PKPASS);
+                .toGetRequestInformation(c -> {
+                    c.queryParameters.platform = GetPlatformQueryParameterType.Apple;
+                    c.headers.add("Accept", PKPASS);
+                });
 
         InputStream body = factoryClient.adapter().sendPrimitive(request, new HashMap<>(), InputStream.class);
         if (body == null) {
-            return new byte[0];
+            throw new TransportException("The wallet pass answer has no body", null);
         }
         try (body) {
             return body.readAllBytes();

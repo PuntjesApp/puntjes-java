@@ -26,6 +26,11 @@ public final class Paginator {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new Items<>(fetch), Spliterator.ORDERED), false);
     }
 
+    /** The same walk as {@link #all}, as an {@link Iterable} for a {@code for} loop. Each loop starts from page 1. */
+    public static <T> Iterable<T> iterable(IntFunction<Page<T>> fetch) {
+        return () -> new Items<>(fetch);
+    }
+
     private static final class Items<T> implements Iterator<T> {
         private final IntFunction<Page<T>> fetch;
         private Iterator<T> current = List.<T>of().iterator();

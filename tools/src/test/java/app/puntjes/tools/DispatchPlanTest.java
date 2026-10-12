@@ -22,7 +22,7 @@ class DispatchPlanTest {
         int exit = DispatchPlan.run(args,
                 new PrintStream(out, true, StandardCharsets.UTF_8), new PrintStream(err, true, StandardCharsets.UTF_8));
         Map<String, String> plan = new LinkedHashMap<>();
-        for (String line : out.toString(StandardCharsets.UTF_8).split("\n")) {
+        for (String line : out.toString(StandardCharsets.UTF_8).split("\\R")) {
             if (!line.isEmpty()) {
                 String[] pair = line.split("=", 2);
                 plan.put(pair[0], pair.length > 1 ? pair[1] : "");
@@ -71,7 +71,7 @@ class DispatchPlanTest {
                 "https://raw.githubusercontent.com/PuntjesApp/puntjes-openapi/v9.9.9/api.json", "x");
 
         assertEquals(1, foreign.exit());
-        assertEquals("The url is not api.json of puntjes-openapi at v1.1.0.\n", foreign.error());
+        assertEquals("The url is not api.json of puntjes-openapi at v1.1.0." + System.lineSeparator(), foreign.error());
         assertEquals(1, otherTag.exit());
     }
 
@@ -81,10 +81,27 @@ class DispatchPlanTest {
         Result tag = run("v1.1.0;rm", "minor", URL, "x");
 
         assertEquals(1, level.exit());
-        assertEquals("The level huge is not major, minor or patch.\n", level.error());
+        assertEquals("The level huge is not major, minor or patch." + System.lineSeparator(), level.error());
         assertEquals(1, tag.exit());
-        assertEquals("The tag v1.1.0;rm is not vX.Y.Z.\n", tag.error());
+        assertEquals("The tag v1.1.0;rm is not vX.Y.Z." + System.lineSeparator(), tag.error());
         assertEquals(Map.of(), tag.plan());
+    }
+
+    @Test
+    void aSourceVersionTooLargeForALongIsNotATagAndIsNotSkipped() {
+        Result result = run("v1.1.0", "minor", URL, "v99999999999999999999.0.0");
+
+        assertEquals(0, result.exit());
+        assertEquals("false", result.plan().get("skip"));
+    }
+
+    @Test
+    void aTagTooLargeForALongIsRefused() {
+        String tag = "v99999999999999999999.0.0";
+        Result result = run(tag, "minor", URL.replace("v1.1.0", tag), "x");
+
+        assertEquals(1, result.exit());
+        assertEquals("The tag " + tag + " is not vX.Y.Z." + System.lineSeparator(), result.error());
     }
 
     @Test
