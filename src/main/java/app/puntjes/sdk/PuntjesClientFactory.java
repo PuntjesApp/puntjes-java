@@ -1,7 +1,6 @@
 package app.puntjes.sdk;
 
 import app.puntjes.sdk.generated.PuntjesClient;
-import app.puntjes.sdk.http.HttpClients;
 import com.microsoft.kiota.authentication.AnonymousAuthenticationProvider;
 import com.microsoft.kiota.http.OkHttpRequestAdapter;
 import okhttp3.OkHttpClient;

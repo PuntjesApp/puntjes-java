@@ -1,4 +1,4 @@
-package app.puntjes.sdk.http;
+package app.puntjes.sdk;
 
 import app.puntjes.sdk.exceptions.ApiError;
 import app.puntjes.sdk.exceptions.AuthenticationException;

@@ -1,4 +1,4 @@
-package app.puntjes.sdk.http;
+package app.puntjes.sdk;
 
 import java.time.Duration;
 import java.time.Instant;

@@ -1,15 +1,12 @@
-package app.puntjes.sdk.http;
+package app.puntjes.sdk;
 
-import app.puntjes.sdk.PuntjesOptions;
 import okhttp3.OkHttpClient;
 
-/** Builds the HTTP client behind {@code PuntjesClientFactory}. Not meant to be called by applications. */
-public final class HttpClients {
+final class HttpClients {
     private HttpClients() {
     }
 
-    /** The client with authentication, retries and one exception family per error, as the options say. */
-    public static OkHttpClient build(String clientId, String clientSecret, PuntjesOptions options) {
+    static OkHttpClient build(String clientId, String clientSecret, PuntjesOptions options) {
         OkHttpClient base = options.httpClient().map(OkHttpClient::newBuilder).orElseGet(OkHttpClient.Builder::new)
                 .connectTimeout(options.timeout())
                 .readTimeout(options.timeout())

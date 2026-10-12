@@ -1,11 +1,9 @@
-package app.puntjes.sdk.http;
+package app.puntjes.sdk;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
-import app.puntjes.sdk.PuntjesClientFactory;
-import app.puntjes.sdk.PuntjesOptions;
 import app.puntjes.sdk.exceptions.PlanLimitExceededException;
 import app.puntjes.sdk.exceptions.RateLimitException;
 import app.puntjes.sdk.exceptions.ServerException;

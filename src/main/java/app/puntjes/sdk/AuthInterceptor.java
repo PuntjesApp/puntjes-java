@@ -1,6 +1,5 @@
-package app.puntjes.sdk.http;
+package app.puntjes.sdk;
 
-import app.puntjes.sdk.PuntjesOptions;
 import app.puntjes.sdk.auth.AccessToken;
 import app.puntjes.sdk.auth.InMemoryTokenStore;
 import app.puntjes.sdk.generated.security.PublicOperations;

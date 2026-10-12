@@ -1,6 +1,5 @@
-package app.puntjes.sdk.http;
+package app.puntjes.sdk;
 
-import app.puntjes.sdk.PuntjesOptions;
 import app.puntjes.sdk.generated.errors.ErrorCode;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
