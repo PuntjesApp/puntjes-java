@@ -65,7 +65,7 @@ Puntjes OpenAPI document, so it has every call the API has. A call follows the U
 `puntjes.customers().byCustomer("42").wallet().get()` is `GET /customers/42/wallet`. Read the `getData()` part of the
 answer.
 
-`examples/quickstart` is a complete program. It reads `PUNTJES_CLIENT_ID`, `PUNTJES_CLIENT_SECRET` and, if set,
+`examples/quickstart` is a complete program. It records a real purchase, so run it against a test shop. It reads `PUNTJES_CLIENT_ID`, `PUNTJES_CLIENT_SECRET` and, if set,
 `PUNTJES_BASE_URL` from the environment:
 
 ```bash
@@ -129,7 +129,7 @@ try {
 }
 ```
 
-`errorCode()` is empty for a code that is newer than your SDK; `rawCode()` always holds the code as the API sent it.
+`errorCode()` is empty for a code that is newer than your SDK; `rawCode()` holds the code as the API sent it, when it sent one.
 
 ## Pages
 
@@ -172,7 +172,7 @@ hand: CI regenerates it and fails on any difference.
 ```
 
 The Maven Wrapper downloads Maven 3.9.16. JitPack runs `./mvnw -B install -DskipTests -Drevision=<tag>`: the version
-comes from `-Drevision`, so no file holds it.
+comes from `-Drevision`, so no file that the build reads holds it.
 
 ## License
 

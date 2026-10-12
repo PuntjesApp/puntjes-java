@@ -14,10 +14,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -110,7 +110,8 @@ class SpecCodegenTest {
         Path classes = Files.createDirectories(dir.resolve("classes"));
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         assertEquals(0, compiler.run(null, null, null, "-d", classes.toString(), file.toString()));
-        URLClassLoader loader = new URLClassLoader(new URL[] {classes.toUri().toURL()});
-        return loader.loadClass(className);
+        try (URLClassLoader loader = new URLClassLoader(new URL[] {classes.toUri().toURL()})) {
+            return loader.loadClass(className);
+        }
     }
 }

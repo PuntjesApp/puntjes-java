@@ -18,6 +18,7 @@ public final class SpecCodegen {
     /** One documented error code and the HTTP status it comes with. */
     public record ErrorCodeEntry(String code, int status) {}
 
+    /** The distinct error codes of the spec, sorted by code; a code with two statuses is refused. */
     public static List<ErrorCodeEntry> errorCodes(JsonNode spec) {
         Map<String, Integer> codes = new TreeMap<>();
         collect(spec, codes);
@@ -27,6 +28,7 @@ public final class SpecCodegen {
                 .toList();
     }
 
+    /** The operations that declare an empty security list, as {@code METHOD /path}. */
     public static List<String> publicOperations(JsonNode spec) {
         List<String> operations = new ArrayList<>();
         spec.path("paths").properties().forEach(path -> path.getValue().properties().stream()
@@ -38,6 +40,7 @@ public final class SpecCodegen {
         return operations;
     }
 
+    /** The source of the {@code ErrorCode} enum. */
     public static String renderErrorCode(List<ErrorCodeEntry> codes) {
         String constants = codes.stream()
                 .map(entry -> "    %s(\"%s\", %d)".formatted(entry.code(), entry.code(), entry.status()))
@@ -82,6 +85,7 @@ public final class SpecCodegen {
                 """.formatted(constants);
     }
 
+    /** The source of the {@code PublicOperations} matcher. */
     public static String renderPublicOperations(List<String> operations) {
         String list = operations.stream()
                 .map(operation -> "            \"" + operation + "\"")
