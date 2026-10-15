@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 /** Every error code the API documents, generated from the x-error-codes of spec/api.json. Do not edit. */
 public enum ErrorCode {
+    APPLE_WALLET_UNAVAILABLE("APPLE_WALLET_UNAVAILABLE", 503),
     BATCH_TOO_LARGE("BATCH_TOO_LARGE", 422),
     BRANCH_INACTIVE("BRANCH_INACTIVE", 422),
     BRANCH_NOT_FOUND("BRANCH_NOT_FOUND", 422),
