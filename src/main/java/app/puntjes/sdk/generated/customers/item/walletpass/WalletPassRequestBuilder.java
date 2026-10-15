@@ -43,6 +43,7 @@ public class WalletPassRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 422 status code
      * @throws ErrorResponse When receiving a 429 status code
      * @throws ErrorResponse When receiving a 500 status code
+     * @throws ErrorResponse When receiving a 503 status code
      */
     @jakarta.annotation.Nullable
     public WalletPassGetResponse get() {
@@ -57,6 +58,7 @@ public class WalletPassRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 422 status code
      * @throws ErrorResponse When receiving a 429 status code
      * @throws ErrorResponse When receiving a 500 status code
+     * @throws ErrorResponse When receiving a 503 status code
      */
     @jakarta.annotation.Nullable
     public WalletPassGetResponse get(@jakarta.annotation.Nullable final java.util.function.Consumer<GetRequestConfiguration> requestConfiguration) {
@@ -68,6 +70,7 @@ public class WalletPassRequestBuilder extends BaseRequestBuilder {
         errorMapping.put("422", ErrorResponse::createFromDiscriminatorValue);
         errorMapping.put("429", ErrorResponse::createFromDiscriminatorValue);
         errorMapping.put("500", ErrorResponse::createFromDiscriminatorValue);
+        errorMapping.put("503", ErrorResponse::createFromDiscriminatorValue);
         return this.requestAdapter.send(requestInfo, errorMapping, WalletPassGetResponse::createFromDiscriminatorValue);
     }
     /**
