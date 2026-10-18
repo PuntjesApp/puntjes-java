@@ -1,6 +1,7 @@
 package app.puntjes.sdk.generated.redemptions.item.verify;
 
 import app.puntjes.sdk.generated.models.ErrorResponse;
+import app.puntjes.sdk.generated.models.VerifyRedemptionData;
 import com.microsoft.kiota.BaseRequestBuilder;
 import com.microsoft.kiota.BaseRequestConfiguration;
 import com.microsoft.kiota.HttpMethod;
@@ -35,7 +36,9 @@ public class VerifyRequestBuilder extends BaseRequestBuilder {
         super(requestAdapter, "{+baseurl}/redemptions/{code}/verify", rawUrl);
     }
     /**
+     * @param body The request body
      * @return a {@link VerifyPostResponse}
+     * @throws ErrorResponse When receiving a 400 status code
      * @throws ErrorResponse When receiving a 401 status code
      * @throws ErrorResponse When receiving a 403 status code
      * @throws ErrorResponse When receiving a 404 status code
@@ -45,12 +48,14 @@ public class VerifyRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 500 status code
      */
     @jakarta.annotation.Nullable
-    public VerifyPostResponse post() {
-        return post(null);
+    public VerifyPostResponse post(@jakarta.annotation.Nonnull final VerifyRedemptionData body) {
+        return post(body, null);
     }
     /**
+     * @param body The request body
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @return a {@link VerifyPostResponse}
+     * @throws ErrorResponse When receiving a 400 status code
      * @throws ErrorResponse When receiving a 401 status code
      * @throws ErrorResponse When receiving a 403 status code
      * @throws ErrorResponse When receiving a 404 status code
@@ -60,9 +65,11 @@ public class VerifyRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 500 status code
      */
     @jakarta.annotation.Nullable
-    public VerifyPostResponse post(@jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
-        final RequestInformation requestInfo = toPostRequestInformation(requestConfiguration);
+    public VerifyPostResponse post(@jakarta.annotation.Nonnull final VerifyRedemptionData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
+        Objects.requireNonNull(body);
+        final RequestInformation requestInfo = toPostRequestInformation(body, requestConfiguration);
         final HashMap<String, ParsableFactory<? extends Parsable>> errorMapping = new HashMap<String, ParsableFactory<? extends Parsable>>();
+        errorMapping.put("400", ErrorResponse::createFromDiscriminatorValue);
         errorMapping.put("401", ErrorResponse::createFromDiscriminatorValue);
         errorMapping.put("403", ErrorResponse::createFromDiscriminatorValue);
         errorMapping.put("404", ErrorResponse::createFromDiscriminatorValue);
@@ -73,21 +80,25 @@ public class VerifyRequestBuilder extends BaseRequestBuilder {
         return this.requestAdapter.send(requestInfo, errorMapping, VerifyPostResponse::createFromDiscriminatorValue);
     }
     /**
+     * @param body The request body
      * @return a {@link RequestInformation}
      */
     @jakarta.annotation.Nonnull
-    public RequestInformation toPostRequestInformation() {
-        return toPostRequestInformation(null);
+    public RequestInformation toPostRequestInformation(@jakarta.annotation.Nonnull final VerifyRedemptionData body) {
+        return toPostRequestInformation(body, null);
     }
     /**
+     * @param body The request body
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @return a {@link RequestInformation}
      */
     @jakarta.annotation.Nonnull
-    public RequestInformation toPostRequestInformation(@jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
+    public RequestInformation toPostRequestInformation(@jakarta.annotation.Nonnull final VerifyRedemptionData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
+        Objects.requireNonNull(body);
         final RequestInformation requestInfo = new RequestInformation(HttpMethod.POST, urlTemplate, pathParameters);
         requestInfo.configure(requestConfiguration, PostRequestConfiguration::new);
         requestInfo.headers.tryAdd("Accept", "application/json");
+        requestInfo.setContentFromParsable(requestAdapter, "application/json", body);
         return requestInfo;
     }
     /**

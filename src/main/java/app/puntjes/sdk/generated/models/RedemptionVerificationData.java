@@ -15,6 +15,10 @@ public class RedemptionVerificationData implements AdditionalDataHolder, Parsabl
      */
     private Map<String, Object> additionalData;
     /**
+     * The branches the reward has now; null means every branch.
+     */
+    private java.util.List<BranchReferenceData> branches;
+    /**
      * The confirmation_code property
      */
     private String confirmationCode;
@@ -67,6 +71,14 @@ public class RedemptionVerificationData implements AdditionalDataHolder, Parsabl
         return this.additionalData;
     }
     /**
+     * Gets the branches property value. The branches the reward has now; null means every branch.
+     * @return a {@link java.util.List<BranchReferenceData>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<BranchReferenceData> getBranches() {
+        return this.branches;
+    }
+    /**
      * Gets the confirmation_code property value. The confirmation_code property
      * @return a {@link String}
      */
@@ -80,7 +92,8 @@ public class RedemptionVerificationData implements AdditionalDataHolder, Parsabl
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(7);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(8);
+        deserializerMap.put("branches", (n) -> { this.setBranches(n.getCollectionOfObjectValues(BranchReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("confirmation_code", (n) -> { this.setConfirmationCode(n.getStringValue()); });
         deserializerMap.put("points_deducted", (n) -> { this.setPointsDeducted(n.getIntegerValue()); });
         deserializerMap.put("redemption_id", (n) -> { this.setRedemptionId(n.getIntegerValue()); });
@@ -144,6 +157,7 @@ public class RedemptionVerificationData implements AdditionalDataHolder, Parsabl
      */
     public void serialize(@jakarta.annotation.Nonnull final SerializationWriter writer) {
         Objects.requireNonNull(writer);
+        writer.writeCollectionOfObjectValues("branches", this.getBranches());
         writer.writeStringValue("confirmation_code", this.getConfirmationCode());
         writer.writeIntegerValue("points_deducted", this.getPointsDeducted());
         writer.writeIntegerValue("redemption_id", this.getRedemptionId());
@@ -159,6 +173,13 @@ public class RedemptionVerificationData implements AdditionalDataHolder, Parsabl
      */
     public void setAdditionalData(@jakarta.annotation.Nullable final Map<String, Object> value) {
         this.additionalData = value;
+    }
+    /**
+     * Sets the branches property value. The branches the reward has now; null means every branch.
+     * @param value Value to set for the branches property.
+     */
+    public void setBranches(@jakarta.annotation.Nullable final java.util.List<BranchReferenceData> value) {
+        this.branches = value;
     }
     /**
      * Sets the confirmation_code property value. The confirmation_code property
