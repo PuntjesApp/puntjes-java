@@ -58,7 +58,7 @@ public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 500 status code
      */
     @jakarta.annotation.Nullable
-    public WithExternalPatchResponse patch(@jakarta.annotation.Nonnull final UpdateCustomerData body) {
+    public WithExternalPatchResponse patch(@jakarta.annotation.Nullable final UpdateCustomerData body) {
         return patch(body, null);
     }
     /**
@@ -76,8 +76,7 @@ public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 500 status code
      */
     @jakarta.annotation.Nullable
-    public WithExternalPatchResponse patch(@jakarta.annotation.Nonnull final UpdateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PatchRequestConfiguration> requestConfiguration) {
-        Objects.requireNonNull(body);
+    public WithExternalPatchResponse patch(@jakarta.annotation.Nullable final UpdateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PatchRequestConfiguration> requestConfiguration) {
         final RequestInformation requestInfo = toPatchRequestInformation(body, requestConfiguration);
         final HashMap<String, ParsableFactory<? extends Parsable>> errorMapping = new HashMap<String, ParsableFactory<? extends Parsable>>();
         errorMapping.put("400", ErrorResponse::createFromDiscriminatorValue);
@@ -90,6 +89,23 @@ public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
         errorMapping.put("429", ErrorResponse::createFromDiscriminatorValue);
         errorMapping.put("500", ErrorResponse::createFromDiscriminatorValue);
         return this.requestAdapter.send(requestInfo, errorMapping, WithExternalPatchResponse::createFromDiscriminatorValue);
+    }
+    /**
+     * Without a body: the spec makes the patch body optional.
+     * @return a {@link WithExternalPatchResponse}
+     */
+    @jakarta.annotation.Nullable
+    public WithExternalPatchResponse patch() {
+        return patch(null, null);
+    }
+    /**
+     * Without a body: the spec makes the patch body optional.
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @return a {@link WithExternalPatchResponse}
+     */
+    @jakarta.annotation.Nullable
+    public WithExternalPatchResponse patch(@jakarta.annotation.Nullable final java.util.function.Consumer<PatchRequestConfiguration> requestConfiguration) {
+        return patch(null, requestConfiguration);
     }
     /**
      * @param body The request body
@@ -105,7 +121,7 @@ public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 500 status code
      */
     @jakarta.annotation.Nullable
-    public WithExternalPutResponse put(@jakarta.annotation.Nonnull final UpdateCustomerData body) {
+    public WithExternalPutResponse put(@jakarta.annotation.Nullable final UpdateCustomerData body) {
         return put(body, null);
     }
     /**
@@ -123,8 +139,7 @@ public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 500 status code
      */
     @jakarta.annotation.Nullable
-    public WithExternalPutResponse put(@jakarta.annotation.Nonnull final UpdateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PutRequestConfiguration> requestConfiguration) {
-        Objects.requireNonNull(body);
+    public WithExternalPutResponse put(@jakarta.annotation.Nullable final UpdateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PutRequestConfiguration> requestConfiguration) {
         final RequestInformation requestInfo = toPutRequestInformation(body, requestConfiguration);
         final HashMap<String, ParsableFactory<? extends Parsable>> errorMapping = new HashMap<String, ParsableFactory<? extends Parsable>>();
         errorMapping.put("400", ErrorResponse::createFromDiscriminatorValue);
@@ -139,11 +154,28 @@ public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
         return this.requestAdapter.send(requestInfo, errorMapping, WithExternalPutResponse::createFromDiscriminatorValue);
     }
     /**
+     * Without a body: the spec makes the put body optional.
+     * @return a {@link WithExternalPutResponse}
+     */
+    @jakarta.annotation.Nullable
+    public WithExternalPutResponse put() {
+        return put(null, null);
+    }
+    /**
+     * Without a body: the spec makes the put body optional.
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @return a {@link WithExternalPutResponse}
+     */
+    @jakarta.annotation.Nullable
+    public WithExternalPutResponse put(@jakarta.annotation.Nullable final java.util.function.Consumer<PutRequestConfiguration> requestConfiguration) {
+        return put(null, requestConfiguration);
+    }
+    /**
      * @param body The request body
      * @return a {@link RequestInformation}
      */
     @jakarta.annotation.Nonnull
-    public RequestInformation toPatchRequestInformation(@jakarta.annotation.Nonnull final UpdateCustomerData body) {
+    public RequestInformation toPatchRequestInformation(@jakarta.annotation.Nullable final UpdateCustomerData body) {
         return toPatchRequestInformation(body, null);
     }
     /**
@@ -152,20 +184,38 @@ public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
      * @return a {@link RequestInformation}
      */
     @jakarta.annotation.Nonnull
-    public RequestInformation toPatchRequestInformation(@jakarta.annotation.Nonnull final UpdateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PatchRequestConfiguration> requestConfiguration) {
-        Objects.requireNonNull(body);
+    public RequestInformation toPatchRequestInformation(@jakarta.annotation.Nullable final UpdateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PatchRequestConfiguration> requestConfiguration) {
         final RequestInformation requestInfo = new RequestInformation(HttpMethod.PATCH, urlTemplate, pathParameters);
         requestInfo.configure(requestConfiguration, PatchRequestConfiguration::new);
         requestInfo.headers.tryAdd("Accept", "application/json");
-        requestInfo.setContentFromParsable(requestAdapter, "application/json", body);
+        if (body != null) {
+            requestInfo.setContentFromParsable(requestAdapter, "application/json", body);
+        }
         return requestInfo;
+    }
+    /**
+     * Without a body: the spec makes the patch body optional.
+     * @return a {@link RequestInformation}
+     */
+    @jakarta.annotation.Nonnull
+    public RequestInformation toPatchRequestInformation() {
+        return toPatchRequestInformation(null, null);
+    }
+    /**
+     * Without a body: the spec makes the patch body optional.
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @return a {@link RequestInformation}
+     */
+    @jakarta.annotation.Nonnull
+    public RequestInformation toPatchRequestInformation(@jakarta.annotation.Nullable final java.util.function.Consumer<PatchRequestConfiguration> requestConfiguration) {
+        return toPatchRequestInformation(null, requestConfiguration);
     }
     /**
      * @param body The request body
      * @return a {@link RequestInformation}
      */
     @jakarta.annotation.Nonnull
-    public RequestInformation toPutRequestInformation(@jakarta.annotation.Nonnull final UpdateCustomerData body) {
+    public RequestInformation toPutRequestInformation(@jakarta.annotation.Nullable final UpdateCustomerData body) {
         return toPutRequestInformation(body, null);
     }
     /**
@@ -174,13 +224,31 @@ public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
      * @return a {@link RequestInformation}
      */
     @jakarta.annotation.Nonnull
-    public RequestInformation toPutRequestInformation(@jakarta.annotation.Nonnull final UpdateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PutRequestConfiguration> requestConfiguration) {
-        Objects.requireNonNull(body);
+    public RequestInformation toPutRequestInformation(@jakarta.annotation.Nullable final UpdateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PutRequestConfiguration> requestConfiguration) {
         final RequestInformation requestInfo = new RequestInformation(HttpMethod.PUT, urlTemplate, pathParameters);
         requestInfo.configure(requestConfiguration, PutRequestConfiguration::new);
         requestInfo.headers.tryAdd("Accept", "application/json");
-        requestInfo.setContentFromParsable(requestAdapter, "application/json", body);
+        if (body != null) {
+            requestInfo.setContentFromParsable(requestAdapter, "application/json", body);
+        }
         return requestInfo;
+    }
+    /**
+     * Without a body: the spec makes the put body optional.
+     * @return a {@link RequestInformation}
+     */
+    @jakarta.annotation.Nonnull
+    public RequestInformation toPutRequestInformation() {
+        return toPutRequestInformation(null, null);
+    }
+    /**
+     * Without a body: the spec makes the put body optional.
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @return a {@link RequestInformation}
+     */
+    @jakarta.annotation.Nonnull
+    public RequestInformation toPutRequestInformation(@jakarta.annotation.Nullable final java.util.function.Consumer<PutRequestConfiguration> requestConfiguration) {
+        return toPutRequestInformation(null, requestConfiguration);
     }
     /**
      * Returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.

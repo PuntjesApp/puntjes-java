@@ -29,6 +29,7 @@ public final class Main {
                 SpecCodegen.renderErrorCode(SpecCodegen.errorCodes(document)));
         write(outDir.resolve("security/PublicOperations.java"),
                 SpecCodegen.renderPublicOperations(SpecCodegen.publicOperations(document)));
+        OptionalBodies.apply(document, outDir);
     }
 
     private static void write(Path file, String content) throws IOException {

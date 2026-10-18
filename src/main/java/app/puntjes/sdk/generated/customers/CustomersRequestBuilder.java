@@ -88,7 +88,7 @@ public class CustomersRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 500 status code
      */
     @jakarta.annotation.Nullable
-    public CustomersPostResponse post(@jakarta.annotation.Nonnull final CreateCustomerData body) {
+    public CustomersPostResponse post(@jakarta.annotation.Nullable final CreateCustomerData body) {
         return post(body, null);
     }
     /**
@@ -105,8 +105,7 @@ public class CustomersRequestBuilder extends BaseRequestBuilder {
      * @throws ErrorResponse When receiving a 500 status code
      */
     @jakarta.annotation.Nullable
-    public CustomersPostResponse post(@jakarta.annotation.Nonnull final CreateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
-        Objects.requireNonNull(body);
+    public CustomersPostResponse post(@jakarta.annotation.Nullable final CreateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
         final RequestInformation requestInfo = toPostRequestInformation(body, requestConfiguration);
         final HashMap<String, ParsableFactory<? extends Parsable>> errorMapping = new HashMap<String, ParsableFactory<? extends Parsable>>();
         errorMapping.put("400", ErrorResponse::createFromDiscriminatorValue);
@@ -120,11 +119,28 @@ public class CustomersRequestBuilder extends BaseRequestBuilder {
         return this.requestAdapter.send(requestInfo, errorMapping, CustomersPostResponse::createFromDiscriminatorValue);
     }
     /**
+     * Without a body: the spec makes the post body optional.
+     * @return a {@link CustomersPostResponse}
+     */
+    @jakarta.annotation.Nullable
+    public CustomersPostResponse post() {
+        return post(null, null);
+    }
+    /**
+     * Without a body: the spec makes the post body optional.
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @return a {@link CustomersPostResponse}
+     */
+    @jakarta.annotation.Nullable
+    public CustomersPostResponse post(@jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
+        return post(null, requestConfiguration);
+    }
+    /**
      * @param body The request body
      * @return a {@link RequestInformation}
      */
     @jakarta.annotation.Nonnull
-    public RequestInformation toPostRequestInformation(@jakarta.annotation.Nonnull final CreateCustomerData body) {
+    public RequestInformation toPostRequestInformation(@jakarta.annotation.Nullable final CreateCustomerData body) {
         return toPostRequestInformation(body, null);
     }
     /**
@@ -133,13 +149,31 @@ public class CustomersRequestBuilder extends BaseRequestBuilder {
      * @return a {@link RequestInformation}
      */
     @jakarta.annotation.Nonnull
-    public RequestInformation toPostRequestInformation(@jakarta.annotation.Nonnull final CreateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
-        Objects.requireNonNull(body);
+    public RequestInformation toPostRequestInformation(@jakarta.annotation.Nullable final CreateCustomerData body, @jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
         final RequestInformation requestInfo = new RequestInformation(HttpMethod.POST, urlTemplate, pathParameters);
         requestInfo.configure(requestConfiguration, PostRequestConfiguration::new);
         requestInfo.headers.tryAdd("Accept", "application/json");
-        requestInfo.setContentFromParsable(requestAdapter, "application/json", body);
+        if (body != null) {
+            requestInfo.setContentFromParsable(requestAdapter, "application/json", body);
+        }
         return requestInfo;
+    }
+    /**
+     * Without a body: the spec makes the post body optional.
+     * @return a {@link RequestInformation}
+     */
+    @jakarta.annotation.Nonnull
+    public RequestInformation toPostRequestInformation() {
+        return toPostRequestInformation(null, null);
+    }
+    /**
+     * Without a body: the spec makes the post body optional.
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @return a {@link RequestInformation}
+     */
+    @jakarta.annotation.Nonnull
+    public RequestInformation toPostRequestInformation(@jakarta.annotation.Nullable final java.util.function.Consumer<PostRequestConfiguration> requestConfiguration) {
+        return toPostRequestInformation(null, requestConfiguration);
     }
     /**
      * Returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
