@@ -9,6 +9,7 @@
   The four methods of `VerifyRequestBuilder` (`post`, `toPostRequestInformation`, and their overloads with a configuration) take a `VerifyRedemptionData` as first argument.
   * before: `.verify().post()`
   * after: `.verify().post(new VerifyRedemptionData())`
+  * 1.2.1 makes the body optional again, so both calls work.
 
 
 ### Features
