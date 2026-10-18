@@ -22,6 +22,10 @@ public class VendorBrandingData implements AdditionalDataHolder, Parsable {
      */
     private String brandColorPrimary;
     /**
+     * The default_branch property
+     */
+    private BranchReferenceData defaultBranch;
+    /**
      * The display_name property
      */
     private String displayName;
@@ -70,6 +74,14 @@ public class VendorBrandingData implements AdditionalDataHolder, Parsable {
         return this.brandColorPrimary;
     }
     /**
+     * Gets the default_branch property value. The default_branch property
+     * @return a {@link BranchReferenceData}
+     */
+    @jakarta.annotation.Nullable
+    public BranchReferenceData getDefaultBranch() {
+        return this.defaultBranch;
+    }
+    /**
      * Gets the display_name property value. The display_name property
      * @return a {@link String}
      */
@@ -83,9 +95,10 @@ public class VendorBrandingData implements AdditionalDataHolder, Parsable {
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(4);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(5);
         deserializerMap.put("brand_color_accent", (n) -> { this.setBrandColorAccent(n.getStringValue()); });
         deserializerMap.put("brand_color_primary", (n) -> { this.setBrandColorPrimary(n.getStringValue()); });
+        deserializerMap.put("default_branch", (n) -> { this.setDefaultBranch(n.getObjectValue(BranchReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("display_name", (n) -> { this.setDisplayName(n.getStringValue()); });
         deserializerMap.put("logo_url", (n) -> { this.setLogoUrl(n.getStringValue()); });
         return deserializerMap;
@@ -106,6 +119,7 @@ public class VendorBrandingData implements AdditionalDataHolder, Parsable {
         Objects.requireNonNull(writer);
         writer.writeStringValue("brand_color_accent", this.getBrandColorAccent());
         writer.writeStringValue("brand_color_primary", this.getBrandColorPrimary());
+        writer.writeObjectValue("default_branch", this.getDefaultBranch());
         writer.writeStringValue("display_name", this.getDisplayName());
         writer.writeStringValue("logo_url", this.getLogoUrl());
         writer.writeAdditionalData(this.getAdditionalData());
@@ -130,6 +144,13 @@ public class VendorBrandingData implements AdditionalDataHolder, Parsable {
      */
     public void setBrandColorPrimary(@jakarta.annotation.Nullable final String value) {
         this.brandColorPrimary = value;
+    }
+    /**
+     * Sets the default_branch property value. The default_branch property
+     * @param value Value to set for the default_branch property.
+     */
+    public void setDefaultBranch(@jakarta.annotation.Nullable final BranchReferenceData value) {
+        this.defaultBranch = value;
     }
     /**
      * Sets the display_name property value. The display_name property

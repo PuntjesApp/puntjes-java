@@ -14,6 +14,10 @@ public class RedemptionRewardData implements AdditionalDataHolder, Parsable {
      */
     private Map<String, Object> additionalData;
     /**
+     * The reward&apos;s id, the one GET /rewards lists.
+     */
+    private Integer id;
+    /**
      * The name property
      */
     private String name;
@@ -51,10 +55,19 @@ public class RedemptionRewardData implements AdditionalDataHolder, Parsable {
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(2);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(3);
+        deserializerMap.put("id", (n) -> { this.setId(n.getIntegerValue()); });
         deserializerMap.put("name", (n) -> { this.setName(n.getStringValue()); });
         deserializerMap.put("type", (n) -> { this.setType(n.getStringValue()); });
         return deserializerMap;
+    }
+    /**
+     * Gets the id property value. The reward&apos;s id, the one GET /rewards lists.
+     * @return a {@link Integer}
+     */
+    @jakarta.annotation.Nullable
+    public Integer getId() {
+        return this.id;
     }
     /**
      * Gets the name property value. The name property
@@ -78,6 +91,7 @@ public class RedemptionRewardData implements AdditionalDataHolder, Parsable {
      */
     public void serialize(@jakarta.annotation.Nonnull final SerializationWriter writer) {
         Objects.requireNonNull(writer);
+        writer.writeIntegerValue("id", this.getId());
         writer.writeStringValue("name", this.getName());
         writer.writeStringValue("type", this.getType());
         writer.writeAdditionalData(this.getAdditionalData());
@@ -88,6 +102,13 @@ public class RedemptionRewardData implements AdditionalDataHolder, Parsable {
      */
     public void setAdditionalData(@jakarta.annotation.Nullable final Map<String, Object> value) {
         this.additionalData = value;
+    }
+    /**
+     * Sets the id property value. The reward&apos;s id, the one GET /rewards lists.
+     * @param value Value to set for the id property.
+     */
+    public void setId(@jakarta.annotation.Nullable final Integer value) {
+        this.id = value;
     }
     /**
      * Sets the name property value. The name property

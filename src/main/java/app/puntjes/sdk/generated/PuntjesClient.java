@@ -1,5 +1,6 @@
 package app.puntjes.sdk.generated;
 
+import app.puntjes.sdk.generated.branches.BranchesRequestBuilder;
 import app.puntjes.sdk.generated.campaigns.CampaignsRequestBuilder;
 import app.puntjes.sdk.generated.customers.CustomersRequestBuilder;
 import app.puntjes.sdk.generated.health.HealthRequestBuilder;
@@ -26,6 +27,14 @@ import java.util.Objects;
  */
 @jakarta.annotation.Generated("com.microsoft.kiota")
 public class PuntjesClient extends BaseRequestBuilder {
+    /**
+     * The branches property
+     * @return a {@link BranchesRequestBuilder}
+     */
+    @jakarta.annotation.Nonnull
+    public BranchesRequestBuilder branches() {
+        return new BranchesRequestBuilder(pathParameters, requestAdapter);
+    }
     /**
      * The campaigns property
      * @return a {@link CampaignsRequestBuilder}

@@ -15,6 +15,10 @@ public class RedemptionCreatedData implements AdditionalDataHolder, Parsable {
      */
     private Map<String, Object> additionalData;
     /**
+     * The branches the reward has now; null means every branch.
+     */
+    private java.util.List<BranchReferenceData> branches;
+    /**
      * The confirmation_code property
      */
     private String confirmationCode;
@@ -71,6 +75,14 @@ public class RedemptionCreatedData implements AdditionalDataHolder, Parsable {
         return this.additionalData;
     }
     /**
+     * Gets the branches property value. The branches the reward has now; null means every branch.
+     * @return a {@link java.util.List<BranchReferenceData>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<BranchReferenceData> getBranches() {
+        return this.branches;
+    }
+    /**
      * Gets the confirmation_code property value. The confirmation_code property
      * @return a {@link String}
      */
@@ -92,7 +104,8 @@ public class RedemptionCreatedData implements AdditionalDataHolder, Parsable {
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(8);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(9);
+        deserializerMap.put("branches", (n) -> { this.setBranches(n.getCollectionOfObjectValues(BranchReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("confirmation_code", (n) -> { this.setConfirmationCode(n.getStringValue()); });
         deserializerMap.put("expires_at", (n) -> { this.setExpiresAt(n.getStringValue()); });
         deserializerMap.put("points_deducted", (n) -> { this.setPointsDeducted(n.getIntegerValue()); });
@@ -157,6 +170,7 @@ public class RedemptionCreatedData implements AdditionalDataHolder, Parsable {
      */
     public void serialize(@jakarta.annotation.Nonnull final SerializationWriter writer) {
         Objects.requireNonNull(writer);
+        writer.writeCollectionOfObjectValues("branches", this.getBranches());
         writer.writeStringValue("confirmation_code", this.getConfirmationCode());
         writer.writeStringValue("expires_at", this.getExpiresAt());
         writer.writeIntegerValue("points_deducted", this.getPointsDeducted());
@@ -173,6 +187,13 @@ public class RedemptionCreatedData implements AdditionalDataHolder, Parsable {
      */
     public void setAdditionalData(@jakarta.annotation.Nullable final Map<String, Object> value) {
         this.additionalData = value;
+    }
+    /**
+     * Sets the branches property value. The branches the reward has now; null means every branch.
+     * @param value Value to set for the branches property.
+     */
+    public void setBranches(@jakarta.annotation.Nullable final java.util.List<BranchReferenceData> value) {
+        this.branches = value;
     }
     /**
      * Sets the confirmation_code property value. The confirmation_code property
