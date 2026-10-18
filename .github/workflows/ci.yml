@@ -2,6 +2,8 @@ name: CI
 
 on:
   pull_request:
+    # edited: retitling a PR 'feat!: ...' runs the compatibility check again.
+    types: [opened, synchronize, reopened, edited]
   push:
     branches: [main]
 
@@ -101,6 +103,30 @@ jobs:
           fi
           grep -Fq -- "<version>0.0.0-ci</version>" "$pom"
 
+  # The public API against the latest release. A break needs a 'feat!:' title or a 'BREAKING CHANGE:' footer.
+  compatibility:
+    name: Public API matches the last release
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Compare with the latest release
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: sh scripts/bc-check.sh
+
   workflows:
     name: Workflows
     runs-on: ubuntu-latest
@@ -119,7 +145,7 @@ jobs:
   # The one check the main ruleset requires, so a change to the jobs above never edits the ruleset.
   ci:
     name: CI
-    needs: [test, tools, generated, jitpack, workflows]
+    needs: [test, tools, generated, jitpack, compatibility, workflows]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -130,7 +156,9 @@ jobs:
           TOOLS: ${{ needs.tools.result }}
           GENERATED: ${{ needs.generated.result }}
           JITPACK: ${{ needs.jitpack.result }}
+          COMPATIBILITY: ${{ needs.compatibility.result }}
           WORKFLOWS: ${{ needs.workflows.result }}
         run: |
           test "$TEST" = success && test "$TOOLS" = success && test "$GENERATED" = success \
-            && test "$JITPACK" = success && test "$WORKFLOWS" = success
+            && test "$JITPACK" = success && test "$WORKFLOWS" = success \
+            && { test "$COMPATIBILITY" = success || test "$COMPATIBILITY" = skipped; }

@@ -181,4 +181,48 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!-- scripts/bc-check.sh runs this profile: the public API against the last release. -->
+    <profile>
+      <id>bc</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.siom79.japicmp</groupId>
+            <artifactId>japicmp-maven-plugin</artifactId>
+            <version>0.26.5</version>
+            <configuration>
+              <oldVersion>
+                <file>
+                  <path>${bc.oldJar}</path>
+                </file>
+              </oldVersion>
+              <newVersion>
+                <file>
+                  <path>${project.build.directory}/${project.build.finalName}.jar</path>
+                </file>
+              </newVersion>
+              <parameter>
+                <onlyModified>true</onlyModified>
+                <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
+                <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
+                <includes>
+                  <include>app.puntjes.sdk</include>
+                </includes>
+              </parameter>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>cmp</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
