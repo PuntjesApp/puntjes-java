@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/PuntjesApp/puntjes-java/compare/1.2.0...1.2.1) (2026-10-18)
+
+
+### Bug Fixes
+
+* make an optional request body optional again ([#8](https://github.com/PuntjesApp/puntjes-java/issues/8)) ([f1c502e](https://github.com/PuntjesApp/puntjes-java/commit/f1c502e4e7519d430274c13aff1318764afabd41))
+
 ## [1.2.0](https://github.com/PuntjesApp/puntjes-java/compare/1.1.0...1.2.0) (2026-10-18)
 
 
