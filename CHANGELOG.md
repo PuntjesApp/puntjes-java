@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/PuntjesApp/puntjes-java/compare/1.2.1...1.3.0) (2026-10-26)
+
+
+### Features
+
+* regenerate from puntjes-openapi v2.3.0 ([#10](https://github.com/PuntjesApp/puntjes-java/issues/10)) ([e3de300](https://github.com/PuntjesApp/puntjes-java/commit/e3de300d6346895917c7bb104eb3a3dec3d018cb))
+
 ## [1.2.1](https://github.com/PuntjesApp/puntjes-java/compare/1.2.0...1.2.1) (2026-10-18)
 
 
