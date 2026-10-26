@@ -30,6 +30,10 @@ public class UpdateCustomerData implements AdditionalDataHolder, Parsable {
      */
     private String firstName;
     /**
+     * The groups property
+     */
+    private java.util.List<CustomerGroupReferenceData> groups;
+    /**
      * The last_name property
      */
     private String lastName;
@@ -103,11 +107,12 @@ public class UpdateCustomerData implements AdditionalDataHolder, Parsable {
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(9);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(10);
         deserializerMap.put("customer_since", (n) -> { this.setCustomerSince(n.getStringValue()); });
         deserializerMap.put("date_of_birth", (n) -> { this.setDateOfBirth(n.getStringValue()); });
         deserializerMap.put("email", (n) -> { this.setEmail(n.getStringValue()); });
         deserializerMap.put("first_name", (n) -> { this.setFirstName(n.getStringValue()); });
+        deserializerMap.put("groups", (n) -> { this.setGroups(n.getCollectionOfObjectValues(CustomerGroupReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("last_name", (n) -> { this.setLastName(n.getStringValue()); });
         deserializerMap.put("locale", (n) -> { this.setLocale(n.getEnumValue(UpdateCustomerDataLocale::forValue)); });
         deserializerMap.put("marketing_consent", (n) -> { this.setMarketingConsent(n.getBooleanValue()); });
@@ -122,6 +127,14 @@ public class UpdateCustomerData implements AdditionalDataHolder, Parsable {
     @jakarta.annotation.Nullable
     public String getFirstName() {
         return this.firstName;
+    }
+    /**
+     * Gets the groups property value. The groups property
+     * @return a {@link java.util.List<CustomerGroupReferenceData>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<CustomerGroupReferenceData> getGroups() {
+        return this.groups;
     }
     /**
      * Gets the last_name property value. The last_name property
@@ -173,6 +186,7 @@ public class UpdateCustomerData implements AdditionalDataHolder, Parsable {
         writer.writeStringValue("date_of_birth", this.getDateOfBirth());
         writer.writeStringValue("email", this.getEmail());
         writer.writeStringValue("first_name", this.getFirstName());
+        writer.writeCollectionOfObjectValues("groups", this.getGroups());
         writer.writeStringValue("last_name", this.getLastName());
         writer.writeEnumValue("locale", this.getLocale());
         writer.writeBooleanValue("marketing_consent", this.getMarketingConsent());
@@ -214,6 +228,13 @@ public class UpdateCustomerData implements AdditionalDataHolder, Parsable {
      */
     public void setFirstName(@jakarta.annotation.Nullable final String value) {
         this.firstName = value;
+    }
+    /**
+     * Sets the groups property value. The groups property
+     * @param value Value to set for the groups property.
+     */
+    public void setGroups(@jakarta.annotation.Nullable final java.util.List<CustomerGroupReferenceData> value) {
+        this.groups = value;
     }
     /**
      * Sets the last_name property value. The last_name property

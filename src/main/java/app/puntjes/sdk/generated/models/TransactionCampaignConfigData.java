@@ -18,6 +18,10 @@ public class TransactionCampaignConfigData implements AdditionalDataHolder, Pars
      */
     private java.util.List<Integer> branchIds;
     /**
+     * The groups this campaign is for. Absent or empty means everyone.
+     */
+    private java.util.List<Integer> customerGroupIds;
+    /**
      * The most this campaign pays out on one purchase.
      */
     private Integer maxPointsPerPurchase;
@@ -78,13 +82,22 @@ public class TransactionCampaignConfigData implements AdditionalDataHolder, Pars
         return this.branchIds;
     }
     /**
+     * Gets the customer_group_ids property value. The groups this campaign is for. Absent or empty means everyone.
+     * @return a {@link java.util.List<Integer>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<Integer> getCustomerGroupIds() {
+        return this.customerGroupIds;
+    }
+    /**
      * The deserialization information for the current model
      * @return a {@link Map<String, java.util.function.Consumer<ParseNode>>}
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(8);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(9);
         deserializerMap.put("branch_ids", (n) -> { this.setBranchIds(n.getCollectionOfPrimitiveValues(Integer.class)); });
+        deserializerMap.put("customer_group_ids", (n) -> { this.setCustomerGroupIds(n.getCollectionOfPrimitiveValues(Integer.class)); });
         deserializerMap.put("max_points_per_purchase", (n) -> { this.setMaxPointsPerPurchase(n.getIntegerValue()); });
         deserializerMap.put("points", (n) -> { this.setPoints(n.getIntegerValue()); });
         deserializerMap.put("products", (n) -> { this.setProducts(n.getCollectionOfObjectValues(CampaignProductRuleData::createFromDiscriminatorValue)); });
@@ -157,6 +170,7 @@ public class TransactionCampaignConfigData implements AdditionalDataHolder, Pars
     public void serialize(@jakarta.annotation.Nonnull final SerializationWriter writer) {
         Objects.requireNonNull(writer);
         writer.writeCollectionOfPrimitiveValues("branch_ids", this.getBranchIds());
+        writer.writeCollectionOfPrimitiveValues("customer_group_ids", this.getCustomerGroupIds());
         writer.writeIntegerValue("max_points_per_purchase", this.getMaxPointsPerPurchase());
         writer.writeIntegerValue("points", this.getPoints());
         writer.writeCollectionOfObjectValues("products", this.getProducts());
@@ -179,6 +193,13 @@ public class TransactionCampaignConfigData implements AdditionalDataHolder, Pars
      */
     public void setBranchIds(@jakarta.annotation.Nullable final java.util.List<Integer> value) {
         this.branchIds = value;
+    }
+    /**
+     * Sets the customer_group_ids property value. The groups this campaign is for. Absent or empty means everyone.
+     * @param value Value to set for the customer_group_ids property.
+     */
+    public void setCustomerGroupIds(@jakarta.annotation.Nullable final java.util.List<Integer> value) {
+        this.customerGroupIds = value;
     }
     /**
      * Sets the max_points_per_purchase property value. The most this campaign pays out on one purchase.

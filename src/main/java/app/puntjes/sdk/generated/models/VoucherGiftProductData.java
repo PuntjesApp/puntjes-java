@@ -18,11 +18,11 @@ public class VoucherGiftProductData implements AdditionalDataHolder, Parsable {
      */
     private Integer id;
     /**
-     * The product name as it was when the bon was issued.
+     * The product name as it was when the voucher was issued.
      */
     private String name;
     /**
-     * The item number when the bon was issued, or null when it had none.
+     * The item number when the voucher was issued, or null when it had none.
      */
     private String productReference;
     /**
@@ -75,7 +75,7 @@ public class VoucherGiftProductData implements AdditionalDataHolder, Parsable {
         return this.id;
     }
     /**
-     * Gets the name property value. The product name as it was when the bon was issued.
+     * Gets the name property value. The product name as it was when the voucher was issued.
      * @return a {@link String}
      */
     @jakarta.annotation.Nullable
@@ -83,7 +83,7 @@ public class VoucherGiftProductData implements AdditionalDataHolder, Parsable {
         return this.name;
     }
     /**
-     * Gets the product_reference property value. The item number when the bon was issued, or null when it had none.
+     * Gets the product_reference property value. The item number when the voucher was issued, or null when it had none.
      * @return a {@link String}
      */
     @jakarta.annotation.Nullable
@@ -125,14 +125,14 @@ public class VoucherGiftProductData implements AdditionalDataHolder, Parsable {
         this.id = value;
     }
     /**
-     * Sets the name property value. The product name as it was when the bon was issued.
+     * Sets the name property value. The product name as it was when the voucher was issued.
      * @param value Value to set for the name property.
      */
     public void setName(@jakarta.annotation.Nullable final String value) {
         this.name = value;
     }
     /**
-     * Sets the product_reference property value. The item number when the bon was issued, or null when it had none.
+     * Sets the product_reference property value. The item number when the voucher was issued, or null when it had none.
      * @param value Value to set for the product_reference property.
      */
     public void setProductReference(@jakarta.annotation.Nullable final String value) {

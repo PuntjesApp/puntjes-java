@@ -19,6 +19,10 @@ public class MomentCampaignConfigData implements AdditionalDataHolder, Parsable 
      */
     private java.util.List<Integer> branchIds;
     /**
+     * The groups this campaign is for. Absent or empty means everyone.
+     */
+    private java.util.List<Integer> customerGroupIds;
+    /**
      * What the customer gets. Its `type` says which shape this is.
      */
     private MomentCampaignConfigDataGift gift;
@@ -59,13 +63,22 @@ public class MomentCampaignConfigData implements AdditionalDataHolder, Parsable 
         return this.branchIds;
     }
     /**
+     * Gets the customer_group_ids property value. The groups this campaign is for. Absent or empty means everyone.
+     * @return a {@link java.util.List<Integer>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<Integer> getCustomerGroupIds() {
+        return this.customerGroupIds;
+    }
+    /**
      * The deserialization information for the current model
      * @return a {@link Map<String, java.util.function.Consumer<ParseNode>>}
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(3);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(4);
         deserializerMap.put("branch_ids", (n) -> { this.setBranchIds(n.getCollectionOfPrimitiveValues(Integer.class)); });
+        deserializerMap.put("customer_group_ids", (n) -> { this.setCustomerGroupIds(n.getCollectionOfPrimitiveValues(Integer.class)); });
         deserializerMap.put("gift", (n) -> { this.setGift(n.getObjectValue(MomentCampaignConfigDataGift::createFromDiscriminatorValue)); });
         deserializerMap.put("type", (n) -> { this.setType(n.getEnumValue(MomentCampaignConfigDataType::forValue)); });
         return deserializerMap;
@@ -93,6 +106,7 @@ public class MomentCampaignConfigData implements AdditionalDataHolder, Parsable 
     public void serialize(@jakarta.annotation.Nonnull final SerializationWriter writer) {
         Objects.requireNonNull(writer);
         writer.writeCollectionOfPrimitiveValues("branch_ids", this.getBranchIds());
+        writer.writeCollectionOfPrimitiveValues("customer_group_ids", this.getCustomerGroupIds());
         writer.writeObjectValue("gift", this.getGift());
         writer.writeEnumValue("type", this.getType());
         writer.writeAdditionalData(this.getAdditionalData());
@@ -110,6 +124,13 @@ public class MomentCampaignConfigData implements AdditionalDataHolder, Parsable 
      */
     public void setBranchIds(@jakarta.annotation.Nullable final java.util.List<Integer> value) {
         this.branchIds = value;
+    }
+    /**
+     * Sets the customer_group_ids property value. The groups this campaign is for. Absent or empty means everyone.
+     * @param value Value to set for the customer_group_ids property.
+     */
+    public void setCustomerGroupIds(@jakarta.annotation.Nullable final java.util.List<Integer> value) {
+        this.customerGroupIds = value;
     }
     /**
      * Sets the gift property value. What the customer gets. Its `type` says which shape this is.

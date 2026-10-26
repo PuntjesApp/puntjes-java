@@ -34,6 +34,10 @@ public class CreateCustomerData implements AdditionalDataHolder, Parsable {
      */
     private String firstName;
     /**
+     * The groups property
+     */
+    private java.util.List<CustomerGroupReferenceData> groups;
+    /**
      * The identifiers property
      */
     private java.util.List<CreateIdentifierData> identifiers;
@@ -119,12 +123,13 @@ public class CreateCustomerData implements AdditionalDataHolder, Parsable {
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(11);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(12);
         deserializerMap.put("customer_since", (n) -> { this.setCustomerSince(n.getStringValue()); });
         deserializerMap.put("date_of_birth", (n) -> { this.setDateOfBirth(n.getStringValue()); });
         deserializerMap.put("email", (n) -> { this.setEmail(n.getStringValue()); });
         deserializerMap.put("external_id", (n) -> { this.setExternalId(n.getStringValue()); });
         deserializerMap.put("first_name", (n) -> { this.setFirstName(n.getStringValue()); });
+        deserializerMap.put("groups", (n) -> { this.setGroups(n.getCollectionOfObjectValues(CustomerGroupReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("identifiers", (n) -> { this.setIdentifiers(n.getCollectionOfObjectValues(CreateIdentifierData::createFromDiscriminatorValue)); });
         deserializerMap.put("last_name", (n) -> { this.setLastName(n.getStringValue()); });
         deserializerMap.put("locale", (n) -> { this.setLocale(n.getEnumValue(CreateCustomerDataLocale::forValue)); });
@@ -140,6 +145,14 @@ public class CreateCustomerData implements AdditionalDataHolder, Parsable {
     @jakarta.annotation.Nullable
     public String getFirstName() {
         return this.firstName;
+    }
+    /**
+     * Gets the groups property value. The groups property
+     * @return a {@link java.util.List<CustomerGroupReferenceData>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<CustomerGroupReferenceData> getGroups() {
+        return this.groups;
     }
     /**
      * Gets the identifiers property value. The identifiers property
@@ -200,6 +213,7 @@ public class CreateCustomerData implements AdditionalDataHolder, Parsable {
         writer.writeStringValue("email", this.getEmail());
         writer.writeStringValue("external_id", this.getExternalId());
         writer.writeStringValue("first_name", this.getFirstName());
+        writer.writeCollectionOfObjectValues("groups", this.getGroups());
         writer.writeCollectionOfObjectValues("identifiers", this.getIdentifiers());
         writer.writeStringValue("last_name", this.getLastName());
         writer.writeEnumValue("locale", this.getLocale());
@@ -249,6 +263,13 @@ public class CreateCustomerData implements AdditionalDataHolder, Parsable {
      */
     public void setFirstName(@jakarta.annotation.Nullable final String value) {
         this.firstName = value;
+    }
+    /**
+     * Sets the groups property value. The groups property
+     * @param value Value to set for the groups property.
+     */
+    public void setGroups(@jakarta.annotation.Nullable final java.util.List<CustomerGroupReferenceData> value) {
+        this.groups = value;
     }
     /**
      * Sets the identifiers property value. The identifiers property

@@ -15,7 +15,7 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
      */
     private Map<String, Object> additionalData;
     /**
-     * The branches that take the bon; null means every branch.
+     * The branches that take the voucher; null means every branch.
      */
     private java.util.List<BranchReferenceData> branches;
     /**
@@ -23,7 +23,7 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
      */
     private Integer campaignId;
     /**
-     * How much comes off, for a discount bon. Its `type` says which shape this is.
+     * How much comes off, for a discount voucher. Its `type` says which shape this is.
      */
     private CustomerVoucherDataDiscount discount;
     /**
@@ -31,11 +31,11 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
      */
     private String kind;
     /**
-     * What to hand over, for a free-product bon.
+     * What to hand over, for a free-product voucher.
      */
     private java.util.List<VoucherGiftProductData> products;
     /**
-     * The last day the bon can be spent, or null when it does not run out.
+     * The last day the voucher can be spent, or null when it does not run out.
      */
     private String validUntil;
     /**
@@ -67,7 +67,7 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
         return this.additionalData;
     }
     /**
-     * Gets the branches property value. The branches that take the bon; null means every branch.
+     * Gets the branches property value. The branches that take the voucher; null means every branch.
      * @return a {@link java.util.List<BranchReferenceData>}
      */
     @jakarta.annotation.Nullable
@@ -83,7 +83,7 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
         return this.campaignId;
     }
     /**
-     * Gets the discount property value. How much comes off, for a discount bon. Its `type` says which shape this is.
+     * Gets the discount property value. How much comes off, for a discount voucher. Its `type` says which shape this is.
      * @return a {@link CustomerVoucherDataDiscount}
      */
     @jakarta.annotation.Nullable
@@ -115,7 +115,7 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
         return this.kind;
     }
     /**
-     * Gets the products property value. What to hand over, for a free-product bon.
+     * Gets the products property value. What to hand over, for a free-product voucher.
      * @return a {@link java.util.List<VoucherGiftProductData>}
      */
     @jakarta.annotation.Nullable
@@ -123,7 +123,7 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
         return this.products;
     }
     /**
-     * Gets the valid_until property value. The last day the bon can be spent, or null when it does not run out.
+     * Gets the valid_until property value. The last day the voucher can be spent, or null when it does not run out.
      * @return a {@link String}
      */
     @jakarta.annotation.Nullable
@@ -161,7 +161,7 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
         this.additionalData = value;
     }
     /**
-     * Sets the branches property value. The branches that take the bon; null means every branch.
+     * Sets the branches property value. The branches that take the voucher; null means every branch.
      * @param value Value to set for the branches property.
      */
     public void setBranches(@jakarta.annotation.Nullable final java.util.List<BranchReferenceData> value) {
@@ -175,7 +175,7 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
         this.campaignId = value;
     }
     /**
-     * Sets the discount property value. How much comes off, for a discount bon. Its `type` says which shape this is.
+     * Sets the discount property value. How much comes off, for a discount voucher. Its `type` says which shape this is.
      * @param value Value to set for the discount property.
      */
     public void setDiscount(@jakarta.annotation.Nullable final CustomerVoucherDataDiscount value) {
@@ -189,14 +189,14 @@ public class CustomerVoucherData implements AdditionalDataHolder, Parsable {
         this.kind = value;
     }
     /**
-     * Sets the products property value. What to hand over, for a free-product bon.
+     * Sets the products property value. What to hand over, for a free-product voucher.
      * @param value Value to set for the products property.
      */
     public void setProducts(@jakarta.annotation.Nullable final java.util.List<VoucherGiftProductData> value) {
         this.products = value;
     }
     /**
-     * Sets the valid_until property value. The last day the bon can be spent, or null when it does not run out.
+     * Sets the valid_until property value. The last day the voucher can be spent, or null when it does not run out.
      * @param value Value to set for the valid_until property.
      */
     public void setValidUntil(@jakarta.annotation.Nullable final String value) {

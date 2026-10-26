@@ -15,15 +15,23 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
      */
     private Map<String, Object> additionalData;
     /**
+     * Only true when `status` is `valid` and the customer is a member of none of its customer groups.
+     */
+    private Boolean blockedByGroup;
+    /**
      * The campaign_id property
      */
     private Integer campaignId;
     /**
-     * When the bon was spent, or null while it is not.
+     * When the voucher was spent, or null while it is not.
      */
     private String consumedAt;
     /**
-     * How much comes off, for a discount bon. Its `type` says which shape this is.
+     * Groups that may spend it; empty means every customer.
+     */
+    private java.util.List<CustomerGroupReferenceData> customerGroups;
+    /**
+     * How much comes off, for a discount voucher. Its `type` says which shape this is.
      */
     private CampaignVoucherLookupDataDiscount discount;
     /**
@@ -31,7 +39,7 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
      */
     private String kind;
     /**
-     * What to hand over, for a free-product bon.
+     * What to hand over, for a free-product voucher.
      */
     private java.util.List<VoucherGiftProductData> products;
     /**
@@ -71,6 +79,14 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
         return this.additionalData;
     }
     /**
+     * Gets the blocked_by_group property value. Only true when `status` is `valid` and the customer is a member of none of its customer groups.
+     * @return a {@link Boolean}
+     */
+    @jakarta.annotation.Nullable
+    public Boolean getBlockedByGroup() {
+        return this.blockedByGroup;
+    }
+    /**
      * Gets the campaign_id property value. The campaign_id property
      * @return a {@link Integer}
      */
@@ -79,7 +95,7 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
         return this.campaignId;
     }
     /**
-     * Gets the consumed_at property value. When the bon was spent, or null while it is not.
+     * Gets the consumed_at property value. When the voucher was spent, or null while it is not.
      * @return a {@link String}
      */
     @jakarta.annotation.Nullable
@@ -87,7 +103,15 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
         return this.consumedAt;
     }
     /**
-     * Gets the discount property value. How much comes off, for a discount bon. Its `type` says which shape this is.
+     * Gets the customer_groups property value. Groups that may spend it; empty means every customer.
+     * @return a {@link java.util.List<CustomerGroupReferenceData>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<CustomerGroupReferenceData> getCustomerGroups() {
+        return this.customerGroups;
+    }
+    /**
+     * Gets the discount property value. How much comes off, for a discount voucher. Its `type` says which shape this is.
      * @return a {@link CampaignVoucherLookupDataDiscount}
      */
     @jakarta.annotation.Nullable
@@ -100,9 +124,11 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(8);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(10);
+        deserializerMap.put("blocked_by_group", (n) -> { this.setBlockedByGroup(n.getBooleanValue()); });
         deserializerMap.put("campaign_id", (n) -> { this.setCampaignId(n.getIntegerValue()); });
         deserializerMap.put("consumed_at", (n) -> { this.setConsumedAt(n.getStringValue()); });
+        deserializerMap.put("customer_groups", (n) -> { this.setCustomerGroups(n.getCollectionOfObjectValues(CustomerGroupReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("discount", (n) -> { this.setDiscount(n.getObjectValue(CampaignVoucherLookupDataDiscount::createFromDiscriminatorValue)); });
         deserializerMap.put("kind", (n) -> { this.setKind(n.getStringValue()); });
         deserializerMap.put("products", (n) -> { this.setProducts(n.getCollectionOfObjectValues(VoucherGiftProductData::createFromDiscriminatorValue)); });
@@ -120,7 +146,7 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
         return this.kind;
     }
     /**
-     * Gets the products property value. What to hand over, for a free-product bon.
+     * Gets the products property value. What to hand over, for a free-product voucher.
      * @return a {@link java.util.List<VoucherGiftProductData>}
      */
     @jakarta.annotation.Nullable
@@ -157,8 +183,10 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
      */
     public void serialize(@jakarta.annotation.Nonnull final SerializationWriter writer) {
         Objects.requireNonNull(writer);
+        writer.writeBooleanValue("blocked_by_group", this.getBlockedByGroup());
         writer.writeIntegerValue("campaign_id", this.getCampaignId());
         writer.writeStringValue("consumed_at", this.getConsumedAt());
+        writer.writeCollectionOfObjectValues("customer_groups", this.getCustomerGroups());
         writer.writeObjectValue("discount", this.getDiscount());
         writer.writeStringValue("kind", this.getKind());
         writer.writeCollectionOfObjectValues("products", this.getProducts());
@@ -175,6 +203,13 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
         this.additionalData = value;
     }
     /**
+     * Sets the blocked_by_group property value. Only true when `status` is `valid` and the customer is a member of none of its customer groups.
+     * @param value Value to set for the blocked_by_group property.
+     */
+    public void setBlockedByGroup(@jakarta.annotation.Nullable final Boolean value) {
+        this.blockedByGroup = value;
+    }
+    /**
      * Sets the campaign_id property value. The campaign_id property
      * @param value Value to set for the campaign_id property.
      */
@@ -182,14 +217,21 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
         this.campaignId = value;
     }
     /**
-     * Sets the consumed_at property value. When the bon was spent, or null while it is not.
+     * Sets the consumed_at property value. When the voucher was spent, or null while it is not.
      * @param value Value to set for the consumed_at property.
      */
     public void setConsumedAt(@jakarta.annotation.Nullable final String value) {
         this.consumedAt = value;
     }
     /**
-     * Sets the discount property value. How much comes off, for a discount bon. Its `type` says which shape this is.
+     * Sets the customer_groups property value. Groups that may spend it; empty means every customer.
+     * @param value Value to set for the customer_groups property.
+     */
+    public void setCustomerGroups(@jakarta.annotation.Nullable final java.util.List<CustomerGroupReferenceData> value) {
+        this.customerGroups = value;
+    }
+    /**
+     * Sets the discount property value. How much comes off, for a discount voucher. Its `type` says which shape this is.
      * @param value Value to set for the discount property.
      */
     public void setDiscount(@jakarta.annotation.Nullable final CampaignVoucherLookupDataDiscount value) {
@@ -203,7 +245,7 @@ public class CampaignVoucherLookupData implements AdditionalDataHolder, Parsable
         this.kind = value;
     }
     /**
-     * Sets the products property value. What to hand over, for a free-product bon.
+     * Sets the products property value. What to hand over, for a free-product voucher.
      * @param value Value to set for the products property.
      */
     public void setProducts(@jakarta.annotation.Nullable final java.util.List<VoucherGiftProductData> value) {

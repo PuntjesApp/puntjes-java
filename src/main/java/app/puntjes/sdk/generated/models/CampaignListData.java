@@ -27,6 +27,10 @@ public class CampaignListData implements AdditionalDataHolder, Parsable {
      */
     private String createdAt;
     /**
+     * Who the campaign is for. Empty means every customer.
+     */
+    private java.util.List<CustomerGroupReferenceData> customerGroups;
+    /**
      * The ends_at property
      */
     private String endsAt;
@@ -131,6 +135,14 @@ public class CampaignListData implements AdditionalDataHolder, Parsable {
         return this.createdAt;
     }
     /**
+     * Gets the customer_groups property value. Who the campaign is for. Empty means every customer.
+     * @return a {@link java.util.List<CustomerGroupReferenceData>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<CustomerGroupReferenceData> getCustomerGroups() {
+        return this.customerGroups;
+    }
+    /**
      * Gets the ends_at property value. The ends_at property
      * @return a {@link String}
      */
@@ -152,10 +164,11 @@ public class CampaignListData implements AdditionalDataHolder, Parsable {
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(17);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(18);
         deserializerMap.put("branches", (n) -> { this.setBranches(n.getCollectionOfObjectValues(BranchReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("config", (n) -> { this.setConfig(n.getObjectValue(CampaignListDataConfig::createFromDiscriminatorValue)); });
         deserializerMap.put("created_at", (n) -> { this.setCreatedAt(n.getStringValue()); });
+        deserializerMap.put("customer_groups", (n) -> { this.setCustomerGroups(n.getCollectionOfObjectValues(CustomerGroupReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("ends_at", (n) -> { this.setEndsAt(n.getStringValue()); });
         deserializerMap.put("family", (n) -> { this.setFamily(n.getStringValue()); });
         deserializerMap.put("id", (n) -> { this.setId(n.getIntegerValue()); });
@@ -277,6 +290,7 @@ public class CampaignListData implements AdditionalDataHolder, Parsable {
         writer.writeCollectionOfObjectValues("branches", this.getBranches());
         writer.writeObjectValue("config", this.getConfig());
         writer.writeStringValue("created_at", this.getCreatedAt());
+        writer.writeCollectionOfObjectValues("customer_groups", this.getCustomerGroups());
         writer.writeStringValue("ends_at", this.getEndsAt());
         writer.writeStringValue("family", this.getFamily());
         writer.writeIntegerValue("id", this.getId());
@@ -320,6 +334,13 @@ public class CampaignListData implements AdditionalDataHolder, Parsable {
      */
     public void setCreatedAt(@jakarta.annotation.Nullable final String value) {
         this.createdAt = value;
+    }
+    /**
+     * Sets the customer_groups property value. Who the campaign is for. Empty means every customer.
+     * @param value Value to set for the customer_groups property.
+     */
+    public void setCustomerGroups(@jakarta.annotation.Nullable final java.util.List<CustomerGroupReferenceData> value) {
+        this.customerGroups = value;
     }
     /**
      * Sets the ends_at property value. The ends_at property

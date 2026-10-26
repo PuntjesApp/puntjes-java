@@ -1,6 +1,8 @@
 package app.puntjes.sdk.generated.customers.item;
 
+import app.puntjes.sdk.generated.customers.item.externalid.ExternalIdRequestBuilder;
 import app.puntjes.sdk.generated.customers.item.ledger.LedgerRequestBuilder;
+import app.puntjes.sdk.generated.customers.item.merge.MergeRequestBuilder;
 import app.puntjes.sdk.generated.customers.item.redemptions.RedemptionsRequestBuilder;
 import app.puntjes.sdk.generated.customers.item.sendcard.SendCardRequestBuilder;
 import app.puntjes.sdk.generated.customers.item.transactions.TransactionsRequestBuilder;
@@ -26,12 +28,28 @@ import java.util.Objects;
 @jakarta.annotation.Generated("com.microsoft.kiota")
 public class WithCustomerItemRequestBuilder extends BaseRequestBuilder {
     /**
+     * The externalId property
+     * @return a {@link ExternalIdRequestBuilder}
+     */
+    @jakarta.annotation.Nonnull
+    public ExternalIdRequestBuilder externalId() {
+        return new ExternalIdRequestBuilder(pathParameters, requestAdapter);
+    }
+    /**
      * The ledger property
      * @return a {@link LedgerRequestBuilder}
      */
     @jakarta.annotation.Nonnull
     public LedgerRequestBuilder ledger() {
         return new LedgerRequestBuilder(pathParameters, requestAdapter);
+    }
+    /**
+     * The merge property
+     * @return a {@link MergeRequestBuilder}
+     */
+    @jakarta.annotation.Nonnull
+    public MergeRequestBuilder merge() {
+        return new MergeRequestBuilder(pathParameters, requestAdapter);
     }
     /**
      * The redemptions property
