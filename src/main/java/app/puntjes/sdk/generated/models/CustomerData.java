@@ -46,6 +46,10 @@ public class CustomerData implements AdditionalDataHolder, Parsable {
      */
     private String firstName;
     /**
+     * The customer&apos;s groups, sorted by name, then by external_id.
+     */
+    private java.util.List<CustomerGroupReferenceData> groups;
+    /**
      * The id property
      */
     private Integer id;
@@ -195,7 +199,7 @@ public class CustomerData implements AdditionalDataHolder, Parsable {
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(24);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(25);
         deserializerMap.put("anonymized_at", (n) -> { this.setAnonymizedAt(n.getStringValue()); });
         deserializerMap.put("created_at", (n) -> { this.setCreatedAt(n.getStringValue()); });
         deserializerMap.put("customer_since", (n) -> { this.setCustomerSince(n.getStringValue()); });
@@ -204,6 +208,7 @@ public class CustomerData implements AdditionalDataHolder, Parsable {
         deserializerMap.put("email", (n) -> { this.setEmail(n.getStringValue()); });
         deserializerMap.put("external_id", (n) -> { this.setExternalId(n.getStringValue()); });
         deserializerMap.put("first_name", (n) -> { this.setFirstName(n.getStringValue()); });
+        deserializerMap.put("groups", (n) -> { this.setGroups(n.getCollectionOfObjectValues(CustomerGroupReferenceData::createFromDiscriminatorValue)); });
         deserializerMap.put("id", (n) -> { this.setId(n.getIntegerValue()); });
         deserializerMap.put("identifiers", (n) -> { this.setIdentifiers(n.getCollectionOfObjectValues(CustomerIdentifierData::createFromDiscriminatorValue)); });
         deserializerMap.put("last_name", (n) -> { this.setLastName(n.getStringValue()); });
@@ -229,6 +234,14 @@ public class CustomerData implements AdditionalDataHolder, Parsable {
     @jakarta.annotation.Nullable
     public String getFirstName() {
         return this.firstName;
+    }
+    /**
+     * Gets the groups property value. The customer&apos;s groups, sorted by name, then by external_id.
+     * @return a {@link java.util.List<CustomerGroupReferenceData>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<CustomerGroupReferenceData> getGroups() {
+        return this.groups;
     }
     /**
      * Gets the id property value. The id property
@@ -372,6 +385,7 @@ public class CustomerData implements AdditionalDataHolder, Parsable {
         writer.writeStringValue("email", this.getEmail());
         writer.writeStringValue("external_id", this.getExternalId());
         writer.writeStringValue("first_name", this.getFirstName());
+        writer.writeCollectionOfObjectValues("groups", this.getGroups());
         writer.writeIntegerValue("id", this.getId());
         writer.writeCollectionOfObjectValues("identifiers", this.getIdentifiers());
         writer.writeStringValue("last_name", this.getLastName());
@@ -452,6 +466,13 @@ public class CustomerData implements AdditionalDataHolder, Parsable {
      */
     public void setFirstName(@jakarta.annotation.Nullable final String value) {
         this.firstName = value;
+    }
+    /**
+     * Sets the groups property value. The customer&apos;s groups, sorted by name, then by external_id.
+     * @param value Value to set for the groups property.
+     */
+    public void setGroups(@jakarta.annotation.Nullable final java.util.List<CustomerGroupReferenceData> value) {
+        this.groups = value;
     }
     /**
      * Sets the id property value. The id property

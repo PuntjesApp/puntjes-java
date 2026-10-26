@@ -19,6 +19,10 @@ public class NthPurchaseCampaignConfigData implements AdditionalDataHolder, Pars
      */
     private java.util.List<Integer> branchIds;
     /**
+     * The groups this campaign is for. Absent or empty means everyone.
+     */
+    private java.util.List<Integer> customerGroupIds;
+    /**
      * Which purchase triggers the gift. 3 means every third one.
      */
     private Integer everyN;
@@ -67,6 +71,14 @@ public class NthPurchaseCampaignConfigData implements AdditionalDataHolder, Pars
         return this.branchIds;
     }
     /**
+     * Gets the customer_group_ids property value. The groups this campaign is for. Absent or empty means everyone.
+     * @return a {@link java.util.List<Integer>}
+     */
+    @jakarta.annotation.Nullable
+    public java.util.List<Integer> getCustomerGroupIds() {
+        return this.customerGroupIds;
+    }
+    /**
      * Gets the every_n property value. Which purchase triggers the gift. 3 means every third one.
      * @return a {@link Integer}
      */
@@ -80,8 +92,9 @@ public class NthPurchaseCampaignConfigData implements AdditionalDataHolder, Pars
      */
     @jakarta.annotation.Nonnull
     public Map<String, java.util.function.Consumer<ParseNode>> getFieldDeserializers() {
-        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(5);
+        final HashMap<String, java.util.function.Consumer<ParseNode>> deserializerMap = new HashMap<String, java.util.function.Consumer<ParseNode>>(6);
         deserializerMap.put("branch_ids", (n) -> { this.setBranchIds(n.getCollectionOfPrimitiveValues(Integer.class)); });
+        deserializerMap.put("customer_group_ids", (n) -> { this.setCustomerGroupIds(n.getCollectionOfPrimitiveValues(Integer.class)); });
         deserializerMap.put("every_n", (n) -> { this.setEveryN(n.getIntegerValue()); });
         deserializerMap.put("gift", (n) -> { this.setGift(n.getObjectValue(NthPurchaseCampaignConfigDataGift::createFromDiscriminatorValue)); });
         deserializerMap.put("min_amount", (n) -> { this.setMinAmount(n.getIntegerValue()); });
@@ -119,6 +132,7 @@ public class NthPurchaseCampaignConfigData implements AdditionalDataHolder, Pars
     public void serialize(@jakarta.annotation.Nonnull final SerializationWriter writer) {
         Objects.requireNonNull(writer);
         writer.writeCollectionOfPrimitiveValues("branch_ids", this.getBranchIds());
+        writer.writeCollectionOfPrimitiveValues("customer_group_ids", this.getCustomerGroupIds());
         writer.writeIntegerValue("every_n", this.getEveryN());
         writer.writeObjectValue("gift", this.getGift());
         writer.writeIntegerValue("min_amount", this.getMinAmount());
@@ -138,6 +152,13 @@ public class NthPurchaseCampaignConfigData implements AdditionalDataHolder, Pars
      */
     public void setBranchIds(@jakarta.annotation.Nullable final java.util.List<Integer> value) {
         this.branchIds = value;
+    }
+    /**
+     * Sets the customer_group_ids property value. The groups this campaign is for. Absent or empty means everyone.
+     * @param value Value to set for the customer_group_ids property.
+     */
+    public void setCustomerGroupIds(@jakarta.annotation.Nullable final java.util.List<Integer> value) {
+        this.customerGroupIds = value;
     }
     /**
      * Sets the every_n property value. Which purchase triggers the gift. 3 means every third one.

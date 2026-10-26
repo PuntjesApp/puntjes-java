@@ -23,7 +23,7 @@ public class CampaignVoucherVerificationData implements AdditionalDataHolder, Pa
      */
     private String consumedAt;
     /**
-     * How much comes off, for a discount bon. Its `type` says which shape this is.
+     * How much comes off, for a discount voucher. Its `type` says which shape this is.
      */
     private CampaignVoucherVerificationDataDiscount discount;
     /**
@@ -31,7 +31,7 @@ public class CampaignVoucherVerificationData implements AdditionalDataHolder, Pa
      */
     private String kind;
     /**
-     * What to hand over, for a free-product bon.
+     * What to hand over, for a free-product voucher.
      */
     private java.util.List<VoucherGiftProductData> products;
     /**
@@ -83,7 +83,7 @@ public class CampaignVoucherVerificationData implements AdditionalDataHolder, Pa
         return this.consumedAt;
     }
     /**
-     * Gets the discount property value. How much comes off, for a discount bon. Its `type` says which shape this is.
+     * Gets the discount property value. How much comes off, for a discount voucher. Its `type` says which shape this is.
      * @return a {@link CampaignVoucherVerificationDataDiscount}
      */
     @jakarta.annotation.Nullable
@@ -115,7 +115,7 @@ public class CampaignVoucherVerificationData implements AdditionalDataHolder, Pa
         return this.kind;
     }
     /**
-     * Gets the products property value. What to hand over, for a free-product bon.
+     * Gets the products property value. What to hand over, for a free-product voucher.
      * @return a {@link java.util.List<VoucherGiftProductData>}
      */
     @jakarta.annotation.Nullable
@@ -175,7 +175,7 @@ public class CampaignVoucherVerificationData implements AdditionalDataHolder, Pa
         this.consumedAt = value;
     }
     /**
-     * Sets the discount property value. How much comes off, for a discount bon. Its `type` says which shape this is.
+     * Sets the discount property value. How much comes off, for a discount voucher. Its `type` says which shape this is.
      * @param value Value to set for the discount property.
      */
     public void setDiscount(@jakarta.annotation.Nullable final CampaignVoucherVerificationDataDiscount value) {
@@ -189,7 +189,7 @@ public class CampaignVoucherVerificationData implements AdditionalDataHolder, Pa
         this.kind = value;
     }
     /**
-     * Sets the products property value. What to hand over, for a free-product bon.
+     * Sets the products property value. What to hand over, for a free-product voucher.
      * @param value Value to set for the products property.
      */
     public void setProducts(@jakarta.annotation.Nullable final java.util.List<VoucherGiftProductData> value) {
