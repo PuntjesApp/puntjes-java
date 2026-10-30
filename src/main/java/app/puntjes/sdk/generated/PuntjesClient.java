@@ -2,9 +2,11 @@ package app.puntjes.sdk.generated;
 
 import app.puntjes.sdk.generated.branches.BranchesRequestBuilder;
 import app.puntjes.sdk.generated.campaigns.CampaignsRequestBuilder;
+import app.puntjes.sdk.generated.client.ClientRequestBuilder;
 import app.puntjes.sdk.generated.customers.CustomersRequestBuilder;
 import app.puntjes.sdk.generated.health.HealthRequestBuilder;
 import app.puntjes.sdk.generated.me.MeRequestBuilder;
+import app.puntjes.sdk.generated.partner.PartnerRequestBuilder;
 import app.puntjes.sdk.generated.products.ProductsRequestBuilder;
 import app.puntjes.sdk.generated.redemptions.RedemptionsRequestBuilder;
 import app.puntjes.sdk.generated.rewards.RewardsRequestBuilder;
@@ -44,6 +46,14 @@ public class PuntjesClient extends BaseRequestBuilder {
         return new CampaignsRequestBuilder(pathParameters, requestAdapter);
     }
     /**
+     * The client property
+     * @return a {@link ClientRequestBuilder}
+     */
+    @jakarta.annotation.Nonnull
+    public ClientRequestBuilder client() {
+        return new ClientRequestBuilder(pathParameters, requestAdapter);
+    }
+    /**
      * The customers property
      * @return a {@link CustomersRequestBuilder}
      */
@@ -66,6 +76,14 @@ public class PuntjesClient extends BaseRequestBuilder {
     @jakarta.annotation.Nonnull
     public MeRequestBuilder me() {
         return new MeRequestBuilder(pathParameters, requestAdapter);
+    }
+    /**
+     * The partner property
+     * @return a {@link PartnerRequestBuilder}
+     */
+    @jakarta.annotation.Nonnull
+    public PartnerRequestBuilder partner() {
+        return new PartnerRequestBuilder(pathParameters, requestAdapter);
     }
     /**
      * The products property
