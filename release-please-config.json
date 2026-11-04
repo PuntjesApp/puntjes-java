@@ -7,7 +7,10 @@
       "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md",
       "initial-version": "1.0.0",
-      "include-v-in-tag": false
+      "include-v-in-tag": false,
+      "extra-files": [
+        "README.md"
+      ]
     }
   }
 }

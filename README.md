@@ -18,7 +18,7 @@ Maven:
 <dependency>
   <groupId>com.github.PuntjesApp</groupId>
   <artifactId>puntjes-java</artifactId>
-  <version>1.0.0</version>
+  <version>1.4.1</version> <!-- x-release-please-version -->
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.PuntjesApp:puntjes-java:1.0.0'
+    implementation 'com.github.PuntjesApp:puntjes-java:1.4.1' // x-release-please-version
 }
 ```
 
