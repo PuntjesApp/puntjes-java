@@ -2,6 +2,7 @@ package app.puntjes.sdk.generated.customers.item;
 
 import app.puntjes.sdk.generated.customers.item.externalid.ExternalIdRequestBuilder;
 import app.puntjes.sdk.generated.customers.item.ledger.LedgerRequestBuilder;
+import app.puntjes.sdk.generated.customers.item.loyaltycards.LoyaltyCardsRequestBuilder;
 import app.puntjes.sdk.generated.customers.item.merge.MergeRequestBuilder;
 import app.puntjes.sdk.generated.customers.item.redemptions.RedemptionsRequestBuilder;
 import app.puntjes.sdk.generated.customers.item.sendcard.SendCardRequestBuilder;
@@ -42,6 +43,14 @@ public class WithCustomerItemRequestBuilder extends BaseRequestBuilder {
     @jakarta.annotation.Nonnull
     public LedgerRequestBuilder ledger() {
         return new LedgerRequestBuilder(pathParameters, requestAdapter);
+    }
+    /**
+     * The loyaltyCards property
+     * @return a {@link LoyaltyCardsRequestBuilder}
+     */
+    @jakarta.annotation.Nonnull
+    public LoyaltyCardsRequestBuilder loyaltyCards() {
+        return new LoyaltyCardsRequestBuilder(pathParameters, requestAdapter);
     }
     /**
      * The merge property
