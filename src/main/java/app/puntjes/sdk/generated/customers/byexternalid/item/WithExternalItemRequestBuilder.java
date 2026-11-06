@@ -1,5 +1,6 @@
 package app.puntjes.sdk.generated.customers.byexternalid.item;
 
+import app.puntjes.sdk.generated.customers.byexternalid.item.loyaltycards.LoyaltyCardsRequestBuilder;
 import app.puntjes.sdk.generated.customers.byexternalid.item.sendcard.SendCardRequestBuilder;
 import app.puntjes.sdk.generated.models.ErrorResponse;
 import app.puntjes.sdk.generated.models.UpdateCustomerData;
@@ -20,6 +21,14 @@ import java.util.Objects;
  */
 @jakarta.annotation.Generated("com.microsoft.kiota")
 public class WithExternalItemRequestBuilder extends BaseRequestBuilder {
+    /**
+     * The loyaltyCards property
+     * @return a {@link LoyaltyCardsRequestBuilder}
+     */
+    @jakarta.annotation.Nonnull
+    public LoyaltyCardsRequestBuilder loyaltyCards() {
+        return new LoyaltyCardsRequestBuilder(pathParameters, requestAdapter);
+    }
     /**
      * The sendCard property
      * @return a {@link SendCardRequestBuilder}
